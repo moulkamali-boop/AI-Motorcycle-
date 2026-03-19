@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AI-Motorcycle Maintenance</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AI-Moto">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Orbitron:wght@700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#050608;--s:#0e1014;--s2:#161820;--br:#1e2230;--ac:#ff4d00;--ac2:#ff8c00;--gd:#ffc300;--gn:#00e676;--bl:#00b4ff;--rd:#ff1744;--tx:#e8eaf0;--t2:#7a8099;--t3:#3a3f55;}
@@ -200,6 +204,20 @@ body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(r
       <div class="cprice p15">$15</div>
     </div>
   </div>
+  <!-- REVIEWS BUTTON -->
+  <div style="margin:0 20px 20px;text-align:center">
+    <button onclick="openP('reviews')" style="background:var(--s);border:1px solid var(--br);border-radius:12px;padding:14px 20px;width:100%;cursor:pointer;display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:22px">⭐</span>
+        <div style="text-align:right">
+          <div id="x-revTitle" style="font-size:13px;font-weight:700;color:var(--tx)"></div>
+          <div id="x-revSub" style="font-size:10px;color:var(--t2)"></div>
+        </div>
+      </div>
+      <div id="avgStars" style="font-family:Orbitron,monospace;font-size:18px;color:var(--gd)">—</div>
+    </button>
+  </div>
+
   <div class="footer">
     <div>AI-MOTORCYCLE MAINTENANCE © 2025</div>
     <div id="x-foot" style="margin-top:4px;font-size:9px"></div>
@@ -918,6 +936,7 @@ function applyLang(){
 function nextLang(){
   li = (li+1) % TX.length;
   applyLang();
+  applyRevLang();
 }
 
 // ===================== CORE FUNCTIONS =====================
@@ -1014,8 +1033,153 @@ function shareRpt(){
   else navigator.clipboard.writeText(txt).then(function(){alert('Copied!');});
 }
 
+
+// ===================== REVIEWS =====================
+var STAR_LABELS = [
+  ['','','','',''],
+  ['😞 ضعيف','Faible 😞','Poor 😞','Malo 😞','Fraco 😞','Schlecht 😞','खराब 😞','Buruk 😞','差 😞'],
+  ['😐 مقبول','Passable 😐','Fair 😐','Regular 😐','Regular 😐','Okay 😐','ठीक 😐','Lumayan 😐','一般 😐'],
+  ['🙂 جيد','Bien 🙂','Good 🙂','Bueno 🙂','Bom 🙂','Gut 🙂','अच्छा 🙂','Bagus 🙂','好 🙂'],
+  ['😊 جيد جداً','Très bien 😊','Very Good 😊','Muy bueno 😊','Muito bom 😊','Sehr gut 😊','बहुत अच्छा 😊','Sangat bagus 😊','很好 😊'],
+  ['🤩 ممتاز!','Excellent! 🤩','Excellent! 🤩','Excelente! 🤩','Excelente! 🤩','Ausgezeichnet! 🤩','शानदार! 🤩','Luar biasa! 🤩','优秀! 🤩']
+];
+
+var REV_TX = [
+  {t:'التقييمات',s:'شاركنا رأيك',q:'كيف تقيّم التطبيق؟',btn:'✅ إرسال التقييم',ph1:'اسمك (اختياري)',ph2:'تعليقك...',empty:'كن أول من يقيّم!',title:'⭐ التقييمات',sub:'اضغط لإضافة تقييم'},
+  {t:'Avis',s:'Partagez votre avis',q:'Comment évaluez-vous?',btn:'✅ Envoyer',ph1:'Votre nom (optionnel)',ph2:'Votre commentaire...',empty:'Soyez le premier!',title:'⭐ Avis',sub:'Appuyez pour évaluer'},
+  {t:'Reviews',s:'Share your feedback',q:'How do you rate the app?',btn:'✅ Submit Review',ph1:'Your name (optional)',ph2:'Your comment...',empty:'Be the first to review!',title:'⭐ Reviews',sub:'Tap to add a review'},
+  {t:'Reseñas',s:'Comparte tu opinión',q:'¿Cómo calificas la app?',btn:'✅ Enviar',ph1:'Tu nombre (opcional)',ph2:'Tu comentario...',empty:'¡Sé el primero!',title:'⭐ Reseñas',sub:'Toca para evaluar'},
+  {t:'Avaliações',s:'Compartilhe sua opinião',q:'Como avalia o app?',btn:'✅ Enviar',ph1:'Seu nome (opcional)',ph2:'Seu comentário...',empty:'Seja o primeiro!',title:'⭐ Avaliações',sub:'Toque para avaliar'},
+  {t:'Bewertungen',s:'Teilen Sie Ihre Meinung',q:'Wie bewerten Sie die App?',btn:'✅ Bewertung senden',ph1:'Ihr Name (optional)',ph2:'Ihr Kommentar...',empty:'Seien Sie der Erste!',title:'⭐ Bewertungen',sub:'Tippen um zu bewerten'},
+  {t:'समीक्षाएं',s:'अपनी राय साझा करें',q:'ऐप को कैसे रेट करें?',btn:'✅ समीक्षा भेजें',ph1:'आपका नाम (वैकल्पिक)',ph2:'आपकी टिप्पणी...',empty:'पहले समीक्षक बनें!',title:'⭐ समीक्षाएं',sub:'रेटिंग जोड़ने के लिए टैप करें'},
+  {t:'Ulasan',s:'Bagikan pendapat Anda',q:'Bagaimana penilaian Anda?',btn:'✅ Kirim ulasan',ph1:'Nama Anda (opsional)',ph2:'Komentar Anda...',empty:'Jadilah yang pertama!',title:'⭐ Ulasan',sub:'Ketuk untuk menambah ulasan'},
+  {t:'评价',s:'分享您的意见',q:'您如何评价此应用？',btn:'✅ 提交评价',ph1:'您的姓名（可选）',ph2:'您的评论...',empty:'成为第一个评价者！',title:'⭐ 评价',sub:'点击添加评价'}
+];
+
+var selStar = 0;
+var reviews = JSON.parse(localStorage.getItem('moto_reviews')||'[]');
+
+function pickStar(n){
+  selStar = n;
+  document.querySelectorAll('.star-opt').forEach(function(s,i){
+    s.style.transform = (i < n) ? 'scale(1.2)' : 'scale(1)';
+    s.style.opacity = (i < n) ? '1' : '0.3';
+  });
+  var lbl = document.getElementById('starLabel');
+  if(lbl) lbl.textContent = STAR_LABELS[n][li] || STAR_LABELS[n][2];
+}
+
+function sendReview(){
+  if(!selStar){ alert('⭐'); return; }
+  var name = document.getElementById('revName').value.trim() || REV_TX[li].ph1.split('(')[0].trim();
+  var text = document.getElementById('revText').value.trim();
+  if(!text){ alert('💬'); return; }
+  var rev = {
+    stars: selStar,
+    name: name,
+    text: text,
+    lang: TX[li].code,
+    date: new Date().toLocaleDateString()
+  };
+  reviews.unshift(rev);
+  if(reviews.length > 50) reviews = reviews.slice(0,50);
+  localStorage.setItem('moto_reviews', JSON.stringify(reviews));
+  // reset
+  selStar = 0;
+  document.getElementById('revName').value = '';
+  document.getElementById('revText').value = '';
+  document.querySelectorAll('.star-opt').forEach(function(s){ s.style.transform='scale(1)'; s.style.opacity='1'; });
+  document.getElementById('starLabel').textContent = '';
+  renderReviews();
+  updateAvg();
+}
+
+function renderReviews(){
+  var list = document.getElementById('revList');
+  if(!list) return;
+  if(!reviews.length){
+    list.innerHTML = '<div style="text-align:center;color:var(--t3);padding:20px;font-size:13px">'+(REV_TX[li].empty||'No reviews yet')+'</div>';
+    return;
+  }
+  list.innerHTML = reviews.map(function(r){
+    var stars = Array(r.stars+1).join('⭐');
+    return '<div style="background:var(--s2);border:1px solid var(--br);border-radius:12px;padding:14px;margin-bottom:10px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+      +'<div style="font-size:13px;font-weight:700;color:var(--tx)">'+r.name+'</div>'
+      +'<div style="font-size:10px;color:var(--t3)">'+r.date+'</div>'
+      +'</div>'
+      +'<div style="font-size:16px;margin-bottom:6px">'+stars+'</div>'
+      +'<div style="font-size:12px;color:var(--t2);line-height:1.6">'+r.text+'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function updateAvg(){
+  var avg = document.getElementById('avgStars');
+  var sub = document.getElementById('x-revSub');
+  if(!reviews.length){
+    if(avg) avg.textContent = '—';
+    return;
+  }
+  var sum = reviews.reduce(function(a,r){return a+r.stars;},0);
+  var a = (sum/reviews.length).toFixed(1);
+  var stars = Array(Math.round(sum/reviews.length)+1).join('⭐');
+  if(avg) avg.textContent = a + ' ' + stars;
+  if(sub) sub.textContent = reviews.length + ' ' + (li===0?'تقييم':li===1?'avis':li===2?'reviews':li===3?'reseñas':li===4?'avaliações':li===5?'Bewertungen':li===6?'समीक्षाएं':li===7?'ulasan':'评价');
+}
+
+function applyRevLang(){
+  var R = REV_TX[li]||REV_TX[2];
+  var e = function(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; };
+  e('x-revPanelT', R.t);
+  e('x-revPanelS', R.s);
+  e('x-rateQ', R.q);
+  e('x-btnSendRev', R.btn);
+  e('x-revTitle', R.title);
+  e('x-revSub', R.sub);
+  var n=document.getElementById('revName'), t=document.getElementById('revText');
+  if(n) n.placeholder=R.ph1;
+  if(t) t.placeholder=R.ph2;
+  renderReviews();
+  updateAvg();
+}
+
 // INIT
 applyLang();
+applyRevLang();
 </script>
+
+<!-- REVIEWS PANEL -->
+<div class="panel" id="panel-reviews">
+  <div class="ph"></div><div class="cbtn" onclick="closeP()">×</div>
+  <div style="font-size:22px;margin-bottom:4px">⭐</div>
+  <div class="ptitle" id="x-revPanelT">التقييمات</div>
+  <div class="psub" id="x-revPanelS">شاركنا رأيك — يساعدنا على التحسين</div>
+
+  <!-- ADD REVIEW -->
+  <div style="background:var(--s2);border:1px solid var(--br);border-radius:12px;padding:16px;margin-bottom:14px">
+    <div style="font-size:12px;color:var(--t2);margin-bottom:10px" id="x-rateQ">كيف تقيّم التطبيق؟</div>
+    <!-- Stars -->
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:14px" id="starPicker">
+      <span onclick="pickStar(1)" style="font-size:32px;cursor:pointer;transition:transform 0.2s" class="star-opt" data-v="1">⭐</span>
+      <span onclick="pickStar(2)" style="font-size:32px;cursor:pointer;transition:transform 0.2s" class="star-opt" data-v="2">⭐</span>
+      <span onclick="pickStar(3)" style="font-size:32px;cursor:pointer;transition:transform 0.2s" class="star-opt" data-v="3">⭐</span>
+      <span onclick="pickStar(4)" style="font-size:32px;cursor:pointer;transition:transform 0.2s" class="star-opt" data-v="4">⭐</span>
+      <span onclick="pickStar(5)" style="font-size:32px;cursor:pointer;transition:transform 0.2s" class="star-opt" data-v="5">⭐</span>
+    </div>
+    <div style="font-size:20px;text-align:center;margin-bottom:10px;min-height:28px" id="starLabel"></div>
+    <!-- Name -->
+    <input id="revName" type="text" placeholder="اسمك (اختياري)"
+      style="width:100%;background:var(--bg);border:1px solid var(--br);border-radius:8px;padding:10px 12px;color:var(--tx);font-size:13px;font-family:Cairo,sans-serif;margin-bottom:8px;outline:none"/>
+    <!-- Comment -->
+    <textarea id="revText" placeholder="تعليقك..." rows="3"
+      style="width:100%;background:var(--bg);border:1px solid var(--br);border-radius:8px;padding:10px 12px;color:var(--tx);font-size:13px;font-family:Cairo,sans-serif;resize:none;outline:none;margin-bottom:10px"></textarea>
+    <button class="btn bp" id="x-btnSendRev" onclick="sendReview()" style="margin-top:0">✅ إرسال التقييم</button>
+  </div>
+
+  <!-- REVIEWS LIST -->
+  <div id="revList"></div>
+</div>
+
 </body>
 </html>
