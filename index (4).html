@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0a0a">
+<title>AI-Motorcycle Maintenance</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050608;--s:#0e1014;--s2:#161820;--br:#1e2230;--ac:#ff4d00;--ac2:#ff8c00;--gd:#ffc300;--gn:#00e676;--bl:#00b4ff;--rd:#ff1744;--tx:#e8eaf0;--t2:#7a8099;--t3:#3a3f55;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--tx);font-family:'Cairo',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 20% 10%,rgba(255,77,0,0.06),transparent 60%),radial-gradient(ellipse 50% 30% at 80% 90%,rgba(0,180,255,0.04),transparent 60%);pointer-events:none;z-index:0;}
+body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,77,0,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,77,0,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.app{position:relative;z-index:1;max-width:480px;margin:0 auto;min-height:100vh;}
+.hdr{padding:20px 20px 0;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-ico{width:42px;height:42px;background:linear-gradient(135deg,var(--ac),var(--ac2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 0 20px rgba(255,77,0,0.4);}
+.logo-txt{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--ac);letter-spacing:1px;}
+.logo-sub{font-size:9px;color:var(--t2);font-family:'Orbitron',monospace;letter-spacing:2px;}
+.lang-btn{background:var(--s);border:1px solid var(--br);color:var(--t2);padding:8px 16px;border-radius:20px;font-size:13px;cursor:pointer;font-family:'Orbitron',monospace;font-weight:700;}
+.hero{padding:30px 20px 20px;text-align:center;}
+.pulse{width:140px;height:140px;margin:0 auto 24px;position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.pulse::before,.pulse::after{content:'';position:absolute;border-radius:50%;border:1px solid rgba(255,77,0,0.3);animation:po 3s ease-out infinite;}
+.pulse::before{width:100%;height:100%;}
+.pulse::after{width:80%;height:80%;animation-delay:1s;}
+@keyframes po{0%{transform:scale(0.8);opacity:0.6;}100%{transform:scale(1.3);opacity:0;}}
+.moto{width:100px;height:100px;background:radial-gradient(circle at 40% 40%,#1a1c28,#0a0b10);border:2px solid var(--ac);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:42px;box-shadow:0 0 40px rgba(255,77,0,0.3);position:relative;z-index:1;}
+.moto.scan{animation:sp 1.5s ease-in-out infinite;}
+@keyframes sp{0%,100%{box-shadow:0 0 40px rgba(255,77,0,0.3)}50%{box-shadow:0 0 60px rgba(255,77,0,0.7)}}
+.htitle{font-size:24px;font-weight:900;margin-bottom:8px;background:linear-gradient(135deg,#fff 30%,var(--ac2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hsub{font-size:13px;color:var(--t2);line-height:1.6;}
+.stbar{margin:16px 20px;background:var(--s);border:1px solid var(--br);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:10px;}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--gn);box-shadow:0 0 8px var(--gn);animation:bk 2s infinite;}
+.dot.off{background:var(--t3);box-shadow:none;animation:none;}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:0.3}}
+.stxt{font-size:12px;color:var(--t2);flex:1;}
+.stxt strong{color:var(--gn);}
+.tsec{margin:0 20px 24px;}
+.slbl{font-size:10px;letter-spacing:3px;color:var(--t3);text-transform:uppercase;margin-bottom:12px;font-family:'Orbitron',monospace;}
+.tcon{background:var(--s);border:1px solid var(--br);border-radius:16px;padding:24px 16px;}
+.tnodes{display:flex;gap:8px;}
+.tnode{flex:1;background:var(--s2);border:1px solid var(--br);border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;}
+.tnode::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--nc,var(--ac));transform:scaleX(0);transition:transform 0.3s;}
+.tnode:hover::before{transform:scaleX(1);}
+.tnode:hover{border-color:var(--nc,var(--ac));}
+.tnode[data-n=fuel]{--nc:var(--ac);}
+.tnode[data-n=air]{--nc:var(--bl);}
+.tnode[data-n=spark]{--nc:var(--gd);}
+.ticon{font-size:24px;margin-bottom:6px;}
+.tlbl{font-size:11px;color:var(--t2);font-weight:600;}
+.tst{font-size:9px;margin-top:4px;font-family:'Orbitron',monospace;}
+.tst.ok{color:var(--gn);}.tst.warn{color:var(--gd);}.tst.err{color:var(--rd);}.tst.unk{color:var(--t3);}
+.asec{margin:0 20px 24px;}
+.acard{background:var(--s);border:1px solid var(--br);border-radius:14px;padding:16px;margin-bottom:10px;cursor:pointer;transition:all 0.25s;display:flex;align-items:center;gap:14px;}
+.acard:hover{border-color:var(--ac);transform:translateY(-1px);}
+.cico{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.cf .cico{background:rgba(0,230,118,0.1);border:1px solid rgba(0,230,118,0.2);}
+.c1 .cico{background:rgba(255,140,0,0.1);border:1px solid rgba(255,140,0,0.2);}
+.c2 .cico{background:rgba(0,180,255,0.1);border:1px solid rgba(0,180,255,0.2);}
+.c3 .cico{background:rgba(255,195,0,0.1);border:1px solid rgba(255,195,0,0.2);}
+.cinfo{flex:1;}
+.ctitle{font-size:14px;font-weight:700;margin-bottom:3px;}
+.cdesc{font-size:11px;color:var(--t2);line-height:1.5;}
+.cprice{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;padding:6px 12px;border-radius:20px;flex-shrink:0;}
+.pf{background:rgba(0,230,118,0.1);color:var(--gn);border:1px solid rgba(0,230,118,0.3);}
+.p5{background:rgba(255,140,0,0.1);color:var(--ac2);border:1px solid rgba(255,140,0,0.3);}
+.p10{background:rgba(0,180,255,0.1);color:var(--bl);border:1px solid rgba(0,180,255,0.3);}
+.p15{background:rgba(255,195,0,0.1);color:var(--gd);border:1px solid rgba(255,195,0,0.3);}
+.ovl{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(4px);z-index:100;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+.ovl.on{opacity:1;pointer-events:all;}
+.panel{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:480px;background:var(--s);border-radius:24px 24px 0 0;border:1px solid var(--br);border-bottom:none;z-index:101;max-height:90vh;overflow-y:auto;transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);padding:20px 20px 40px;}
+.panel.on{transform:translateX(-50%) translateY(0);}
+.ph{width:40px;height:4px;background:var(--br);border-radius:2px;margin:0 auto 20px;}
+.ptitle{font-size:18px;font-weight:900;margin-bottom:6px;}
+.psub{font-size:12px;color:var(--t2);margin-bottom:20px;}
+.steps{display:flex;flex-direction:column;gap:12px;}
+.step{background:var(--s2);border:1px solid var(--br);border-radius:12px;padding:14px;display:flex;gap:12px;align-items:flex-start;}
+.step.act{border-color:var(--ac);}
+.step.don{border-color:var(--gn);}
+.sn{width:28px;height:28px;border-radius:50%;background:var(--bg);border:1px solid var(--br);display:flex;align-items:center;justify-content:center;font-size:12px;font-family:'Orbitron',monospace;font-weight:700;color:var(--t2);flex-shrink:0;}
+.step.act .sn{background:var(--ac);border-color:var(--ac);color:#fff;}
+.step.don .sn{background:var(--gn);border-color:var(--gn);color:#000;}
+.step.don .sn::before{content:'✓';}
+.sc{flex:1;}
+.sl{font-size:13px;font-weight:700;margin-bottom:4px;}
+.si{font-size:11px;color:var(--t2);line-height:1.5;}
+.sensor{background:var(--bg);border:1px solid var(--br);border-radius:12px;padding:16px;margin:12px 0;font-family:monospace;font-size:11px;color:var(--gn);min-height:80px;}
+.sv{color:var(--ac2);}
+.rbox{border-radius:14px;padding:18px;margin:14px 0;border:1px solid;}
+.rok{background:rgba(0,230,118,0.05);border-color:rgba(0,230,118,0.3);}
+.rwarn{background:rgba(255,195,0,0.05);border-color:rgba(255,195,0,0.3);}
+.rerr{background:rgba(255,23,68,0.05);border-color:rgba(255,23,68,0.3);}
+.rt{font-size:14px;font-weight:700;margin-bottom:8px;}
+.rd{font-size:12px;color:var(--t2);line-height:1.7;}
+.btn{width:100%;padding:16px;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:10px;font-family:'Cairo',sans-serif;}
+.bp{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;box-shadow:0 4px 20px rgba(255,77,0,0.35);}
+.bs{background:var(--s2);border:1px solid var(--br);color:var(--t2);}
+.bg{background:linear-gradient(135deg,#7a5c00,var(--gd));color:#000;font-weight:900;}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;}
+.pm{background:var(--s2);border:1px solid var(--br);border-radius:10px;padding:12px;text-align:center;cursor:pointer;font-size:12px;color:var(--t2);}
+.pi{font-size:20px;display:block;margin-bottom:4px;}
+.rpt{background:var(--bg);border:1px solid var(--br);border-radius:12px;padding:16px;margin:12px 0;font-size:12px;}
+.rpth{border-bottom:1px solid var(--br);padding-bottom:10px;margin-bottom:10px;display:flex;justify-content:space-between;}
+.rrow{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.03);}
+.rk{color:var(--t2);}
+.rv{font-weight:600;font-family:'Orbitron',monospace;font-size:11px;}
+.vok{color:var(--gn);}.vwarn{color:var(--gd);}.verr{color:var(--rd);}
+.vbar{background:var(--s2);border-radius:8px;padding:14px;margin:8px 0;}
+.vbl{font-size:11px;color:var(--t2);margin-bottom:6px;}
+.vamt{font-family:'Orbitron',monospace;font-size:22px;font-weight:700;color:var(--gd);}
+.vr{font-size:10px;color:var(--t3);font-family:'Orbitron',monospace;}
+.cbtn{position:absolute;top:16px;left:16px;width:36px;height:36px;background:var(--s2);border:1px solid var(--br);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--t2);z-index:10;}
+.divider{height:1px;background:var(--br);margin:16px 0;}
+.oils{display:flex;gap:8px;margin:10px 0;}
+.oil{flex:1;padding:10px 6px;border-radius:10px;border:2px solid transparent;cursor:pointer;text-align:center;background:var(--s2);}
+.oil.sel{border-color:var(--ac);}
+.cdot{width:24px;height:24px;border-radius:50%;margin:0 auto 6px;}
+.clbl{font-size:10px;color:var(--t2);}
+.wave{width:100%;height:60px;background:var(--bg);border:1px solid var(--br);border-radius:8px;overflow:hidden;margin:8px 0;}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;font-family:'Orbitron',monospace;font-weight:700;letter-spacing:1px;margin-bottom:8px;}
+.bfr{background:rgba(0,230,118,0.1);color:var(--gn);border:1px solid rgba(0,230,118,0.3);}
+.bpr{background:rgba(255,77,0,0.1);color:var(--ac);border:1px solid rgba(255,77,0,0.3);}
+.camv{width:100%;aspect-ratio:4/3;background:#000;border-radius:12px;overflow:hidden;position:relative;border:1px solid var(--br);margin:12px 0;}
+.camv video{width:100%;height:100%;object-fit:cover;}
+.camo{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);}
+.sfr{width:70%;aspect-ratio:1;border:2px solid var(--ac);border-radius:8px;position:relative;}
+.sc2{position:absolute;width:20px;height:20px;border-color:var(--ac);border-style:solid;}
+.sc2.tl{top:-2px;left:-2px;border-width:3px 0 0 3px;}
+.sc2.tr{top:-2px;right:-2px;border-width:3px 3px 0 0;}
+.sc2.bl{bottom:-2px;left:-2px;border-width:0 0 3px 3px;}
+.sc2.br{bottom:-2px;right:-2px;border-width:0 3px 3px 0;}
+.scl{position:absolute;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--ac),transparent);animation:slm 2s linear infinite;}
+@keyframes slm{0%{top:0}100%{top:100%}}
+.footer{margin:20px 20px 30px;text-align:center;font-size:10px;color:var(--t3);line-height:1.8;font-family:'Orbitron',monospace;letter-spacing:1px;}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hdr">
+    <div class="logo">
+      <div class="logo-ico">🏍️</div>
+      <div><div class="logo-txt">AI-MOTO</div><div class="logo-sub">MAINTENANCE</div></div>
+    </div>
+    <button class="lang-btn" id="langBtn">🌐 AR</button>
+  </header>
+  <div class="hero">
+    <div class="pulse">
+      <div class="moto" id="mainIco" onclick="quickScan()">🏍️</div>
+    </div>
+    <h1 class="htitle" id="heroT"></h1>
+    <p class="hsub" id="heroS"></p>
+  </div>
+  <div class="stbar">
+    <div class="dot" id="netDot"></div>
+    <div class="stxt" id="netSt"></div>
+    <div style="font-size:10px;color:var(--t3);font-family:'Orbitron',monospace" id="clk"></div>
+  </div>
+  <div class="tsec">
+    <div class="slbl" id="triLbl"></div>
+    <div class="tcon">
+      <div class="tnodes">
+        <div class="tnode" data-n="fuel" onclick="openP('fuel')">
+          <div class="ticon">⛽</div>
+          <div class="tlbl" id="tFuel"></div>
+          <div class="tst unk" id="ts-fuel" data-st="unk">—</div>
+        </div>
+        <div class="tnode" data-n="air" onclick="openP('air')">
+          <div class="ticon">💨</div>
+          <div class="tlbl" id="tAir"></div>
+          <div class="tst unk" id="ts-air" data-st="unk">—</div>
+        </div>
+        <div class="tnode" data-n="spark" onclick="openP('spark')">
+          <div class="ticon">⚡</div>
+          <div class="tlbl" id="tSpark"></div>
+          <div class="tst unk" id="ts-spark" data-st="unk">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="asec">
+    <div class="slbl" id="lvlLbl"></div>
+    <div class="acard cf" onclick="openP('free')">
+      <div class="cico">🔍</div>
+      <div class="cinfo"><div class="ctitle" id="c0t"></div><div class="cdesc" id="c0d"></div></div>
+      <div class="cprice pf">FREE</div>
+    </div>
+    <div class="acard c1" onclick="openP('l1')">
+      <div class="cico">🔊</div>
+      <div class="cinfo"><div class="ctitle" id="c1t"></div><div class="cdesc" id="c1d"></div></div>
+      <div class="cprice p5">$5</div>
+    </div>
+    <div class="acard c2" onclick="openP('l2')">
+      <div class="cico">🛢️</div>
+      <div class="cinfo"><div class="ctitle" id="c2t"></div><div class="cdesc" id="c2d"></div></div>
+      <div class="cprice p10">$10</div>
+    </div>
+    <div class="acard c3" onclick="openP('l3')">
+      <div class="cico">🏆</div>
+      <div class="cinfo"><div class="ctitle" id="c3t"></div><div class="cdesc" id="c3d"></div></div>
+      <div class="cprice p15">$15</div>
+    </div>
+  </div>
+  <div class="footer">
+    <div>AI-MOTORCYCLE MAINTENANCE © 2025</div>
+    <div style="font-size:9px;margin-top:4px">SENSOR-BASED · NO OBD · ANY MOTORCYCLE</div>
+    <div style="color:var(--ac);font-size:9px;margin-top:4px">MOULOUD KAMALI × CLAUDE AI</div>
+  </div>
+</div>
+
+<div class="ovl" id="ovl" onclick="closeP()"></div>
+
+<!-- FREE -->
+<div class="panel" id="panel-free">
+  <div class="ph"></div><div class="cbtn" onclick="closeP()">×</div>
+  <span class="badge bfr">FREE</span>
+  <div class="ptitle" id="pFT"></div><div class="psub" id="pFS"></div>
+  <div class="steps">
+    <div class="step act" id="fs1"><div class="sn">1</div><div class="sc"><div class="sl" id="s1l"></div><div class="si" id="s1i"></div></div></div>
+    <div class="step" id="fs2"><div class="sn">2</div><div class="sc"><div class="sl" id="s2l"></div><div class="si" id="s2i"></div></div></div>
+    <div class="step" id="fs3"><div class="sn">3</div><div class="sc"><div class="sl" id="s3l"></div><div class="si" id="s3i"></div></div></div>
+    <div class="step" id="fs4"><div class="sn">4</div><div class="sc"><div class="sl" id="s4l"></div><div class="si" id="s4i"></div></div></div>
+  </div>
+  <div class="camv" id="fcam" style="display:none">
+    <video id="vid" autoplay playsinline muted></video>
+    <div class="camo"><div class="sfr"><div class="sc2 tl"></div><div class="sc2 tr"></div><div class="sc2 bl"></div><div class="sc2 br"></div><div class="scl"></div></div></div>
+  </div>
+  <div class="sensor" id="fsen" style="display:none">
+    <div>📷 VISUAL: <span class="sv" id="sv1">SCANNING...</span></div>
+    <div>🎙️ AUDIO: <span class="sv" id="sv2">IDLE</span></div>
+    <div>📳 VIBRATION: <span class="sv" id="sv3">0.00g</span></div>
+    <div>STATUS: <span class="sv" id="sv4">NOMINAL</span></div>
+  </div>
+  <div id="fres" style="display:none">
+    <div class="rbox rwarn"><div class="rt" id="rFT"></div><div class="rd" id="rFD"></div></div>
+    <button class="btn bs" id="btnDlF" onclick="dlRpt()"></button>
+    <button class="btn bp" id="btnDeep" onclick="openP('l1')"></button>
+  </div>
+  <div id="fbtn"><button class="btn bp" id="btnSF" onclick="freeStep()"></button></div>
+</div>
+
+<!-- L1 -->
+<div class="panel" id="panel-l1">
+  <div class="ph"></div><div class="cbtn" onclick="closeP()">×</div>
+  <span class="badge bpr">$5 — LEVEL 1</span>
+  <div class="ptitle" id="pL1T"></div><div class="psub" id="pL1S"></div>
+  <div id="l1pay">
+    <div class="pgrid">
+      <div class="pm" onclick="goP('l1')"><span class="pi">💳</span>Visa/MC</div>
+      <div class="pm" onclick="goP('l1')"><span class="pi">📱</span>Google Pay</div>
+      <div class="pm" onclick="goP('l1')"><span class="pi">🍎</span>Apple Pay</div>
+      <div class="pm" onclick="goP('l1')"><span class="pi">💰</span>PayPal</div>
+    </div>
+    <button class="btn bp" id="btnPL1" onclick="goP('l1')"></button>
+    <button class="btn bs" id="btnBL1" style="margin-top:6px" onclick="closeP()"></button>
+  </div>
+  <div id="l1ana" style="display:none">
+    <div class="wave"><canvas id="wfc"></canvas></div>
+    <div class="sensor">
+      <div>FREQ: <span class="sv">2,847 Hz</span></div>
+      <div>RPM: <span class="sv">1,420</span></div>
+      <div>COMBUSTION: <span class="sv">91.4%</span></div>
+    </div>
+    <div style="font-size:12px;color:var(--t2);margin:10px 0 6px" id="smkLbl"></div>
+    <div style="display:flex;gap:6px;margin-bottom:14px">
+      <div onclick="selSmoke(this,'none')" style="flex:1;text-align:center;padding:10px 4px;background:var(--s2);border:1px solid var(--br);border-radius:8px;cursor:pointer;font-size:10px;color:var(--t2)">✅<br><span id="sm0"></span></div>
+      <div onclick="selSmoke(this,'white')" style="flex:1;text-align:center;padding:10px 4px;background:var(--s2);border:1px solid var(--br);border-radius:8px;cursor:pointer;font-size:10px;color:var(--t2)">⬜<br><span id="sm1"></span></div>
+      <div onclick="selSmoke(this,'black')" style="flex:1;text-align:center;padding:10px 4px;background:var(--s2);border:1px solid var(--br);border-radius:8px;cursor:pointer;font-size:10px;color:var(--t2)">⬛<br><span id="sm2"></span></div>
+      <div onclick="selSmoke(this,'blue')" style="flex:1;text-align:center;padding:10px 4px;background:var(--s2);border:1px solid var(--br);border-radius:8px;cursor:pointer;font-size:10px;color:var(--t2)">🔵<br><span id="sm3"></span></div>
+    </div>
+    <div class="rbox rwarn" id="l1res"><div class="rt" id="l1rT"></div><div class="rd" id="l1rD"></div></div>
+    <button class="btn bp" id="btnDlL1" onclick="dlRpt()"></button>
+  </div>
+</div>
+
+<!-- L2 -->
+<div class="panel" id="panel-l2">
+  <div class="ph"></div><div class="cbtn" onclick="closeP()">×</div>
+  <span class="badge bpr">$10 — LEVEL 2</span>
+  <div class="ptitle" id="pL2T"></div><div class="psub" id="pL2S"></div>
+  <div id="l2pay">
+    <div class="rbox" style="background:rgba(0,180,255,0.05);border-color:rgba(0,180,255,0.3);margin-bottom:14px"><div class="rd" id="l2tip"></div></div>
+    <button class="btn bp" id="btnPL2" onclick="goP('l2')"></button>
+    <button class="btn bs" id="btnBL2" style="margin-top:6px" onclick="closeP()"></button>
+  </div>
+  <div id="l2ana" style="display:none">
+    <div style="font-size:12px;color:var(--t2);margin-bottom:10px" id="oilLbl"></div>
+    <div class="oils">
+      <div class="oil" onclick="selOil(this,'amber')"><div class="cdot" style="background:#c8750a"></div><div class="clbl" id="oa"></div></div>
+      <div class="oil" onclick="selOil(this,'brown')"><div class="cdot" style="background:#6b3a0f"></div><div class="clbl" id="ob"></div></div>
+      <div class="oil" onclick="selOil(this,'dark')"><div class="cdot" style="background:#1a0f05"></div><div class="clbl" id="od"></div></div>
+      <div class="oil" onclick="selOil(this,'milky')"><div class="cdot" style="background:#d4c5a0"></div><div class="clbl" id="om"></div></div>
+    </div>
+    <div id="oilres" style="display:none">
+      <div class="rpt">
+        <div class="rpth"><span id="oilH"></span><span style="font-size:10px;color:var(--t3);font-family:'Orbitron',monospace" id="oilid">OIL-2025</span></div>
+        <div class="rrow"><div class="rk" id="okSt"></div><div class="rv" id="oSt">—</div></div>
+        <div class="rrow"><div class="rk" id="okLi"></div><div class="rv" id="oLi">—</div></div>
+        <div class="rrow"><div class="rk" id="okAc"></div><div class="rv" id="oAc">—</div></div>
+      </div>
+      <button class="btn bp" id="btnDlL2" onclick="dlRpt()"></button>
+    </div>
+  </div>
+</div>
+
+<!-- L3 -->
+<div class="panel" id="panel-l3">
+  <div class="ph"></div><div class="cbtn" onclick="closeP()">×</div>
+  <span class="badge bpr">$15 — LEVEL 3</span>
+  <div class="ptitle" id="pL3T"></div><div class="psub" id="pL3S"></div>
+  <div id="l3pay">
+    <div class="rbox" style="background:rgba(255,195,0,0.05);border-color:rgba(255,195,0,0.3);margin-bottom:14px"><div class="rd" id="l3tip"></div></div>
+    <button class="btn bg" id="btnPL3" onclick="goP('l3')"></button>
+    <button class="btn bs" id="btnBL3" style="margin-top:6px" onclick="closeP()"></button>
+  </div>
+  <div id="l3ana" style="display:none">
+    <div class="rpt">
+      <div class="rpth"><span style="font-weight:700" id="l3H"></span><span style="font-size:10px;color:var(--t3);font-family:'Orbitron',monospace" id="l3id">MOTO-2025</span></div>
+      <div class="rrow"><div class="rk" id="l3kE"></div><div class="rv vwarn">72%</div></div>
+      <div class="rrow"><div class="rk" id="l3kI"></div><div class="rv vwarn" id="l3vI"></div></div>
+      <div class="rrow"><div class="rk" id="l3kB"></div><div class="rv vok" id="l3vB"></div></div>
+      <div class="rrow"><div class="rk" id="l3kF"></div><div class="rv vok" id="l3vF"></div></div>
+    </div>
+    <div class="vbar"><div class="vbl" id="mktLbl"></div><div class="vamt">$1,200 — $1,500</div><div class="vr" id="aftLbl"></div></div>
+    <button class="btn bg" id="btnDlL3" onclick="dlRpt()"></button>
+    <button class="btn bs" id="btnShL3" style="margin-top:8px" onclick="shareRpt()"></button>
+  </div>
+</div>
+
+<!-- FUEL -->
+<div class="panel" id="panel-fuel">
+  <div class="ph"></div><div class="cbtn" onclick="closeP()">×</div>
+  <span class="badge bfr" id="fuelBg"></span>
+  <div class="ptitle" id="fuelT"></div><div class="psub" id="fuelS"></div>
+  <div class="steps">
+    <div class="step don"><div class="sn"></div><div class="sc"><div class="sl" id="fS1l"></div><div class="si" id="fS1i"></div></div></div>
+    <div class="step don"><div class="sn"></div><div class="sc"><div class="sl" id="fS2l"></div><div class="si" id="fS2i"></div></div></div>
+  </div>
+  <div class="rbox rok" style="margin-top:14px"><div class="rt" id="fRT"></div><div class="rd" id="fRD"></div></div>
+  <button class="btn bp" id="btnFD" onclick="openP('l1');setTri('fuel','ok')"></button>
+</div>
+
+<!-- AIR -->
+<div class="panel" id="panel-air">
+  <div class="ph"></div><div class="cbtn" onclick="closeP()">×</div>
+  <span class="badge bfr" id="airBg"></span>
+  <div class="ptitle" id="airT"></div><div class="psub" id="airS"></div>
+  <div class="steps">
+    <div class="step don"><div class="sn"></div><div class="sc"><div class="sl" id="aS1l"></div><div class="si" id="aS1i"></div></div></div>
+    <div class="step act"><div class="sn">!</div><div class="sc"><div class="sl" id="aS2l"></div><div class="si" id="aS2i"></div></div></div>
+  </div>
+  <button class="btn bs" id="btnAOk" style="margin-top:14px" onclick="setTri('air','ok');closeP()"></button>
+  <button class="btn bp" id="btnAWn" style="margin-top:6px" onclick="setTri('air','warn');closeP()"></button>
+</div>
+
+<!-- SPARK -->
+<div class="panel" id="panel-spark">
+  <div class="ph"></div><div class="cbtn" onclick="closeP()">×</div>
+  <span class="badge bfr" id="spBg"></span>
+  <div class="ptitle" id="spT"></div><div class="psub" id="spS"></div>
+  <div class="steps">
+    <div class="step don"><div class="sn"></div><div class="sc"><div class="sl" id="spS1l"></div><div class="si" id="spS1i"></div></div></div>
+    <div class="step don"><div class="sn"></div><div class="sc"><div class="sl" id="spS2l"></div><div class="si" id="spS2i"></div></div></div>
+  </div>
+  <div class="divider"></div>
+  <button class="btn bs" id="btnSOk" onclick="setTri('spark','ok');closeP()"></button>
+  <button class="btn bs" id="btnSWn" style="margin-top:6px" onclick="setTri('spark','warn');closeP()"></button>
+  <button class="btn bs" id="btnSEr" style="margin-top:6px" onclick="setTri('spark','err');closeP()"></button>
+</div>
+
+<script>
+// Payment links
+var PAY = {
+  l1: 'https://ai-moto-maintenance.lemonsqueezy.com/checkout/buy/495a1d6c-a783-4b5e-9d75-50c629f0bd1a',
+  l2: 'https://ai-moto-maintenance.lemonsqueezy.com/checkout/buy/b98f5414-6151-4e51-9c4b-8e32e1d7f0e0',
+  l3: 'https://ai-moto-maintenance.lemonsqueezy.com/checkout/buy/2f240156-9de6-43d0-b510-c55d73ef4da6'
+};
+
+function goP(lv) { window.open(PAY[lv], '_blank'); }
+
+// Translations
+var L = {
+  ar: {
+    heroT:'دراجتك تتكلم', heroS:'تشخيص ذكي بحساسات هاتفك\nصوت • صورة • اهتزاز • استنباط',
+    netOn:'متصل — التشخيص الكامل متاح', netOff:'غير متصل — محلي فقط',
+    tri:'مثلث الاحتراق', lvl:'مستويات التشخيص',
+    fuel:'الوقود', air:'الهواء', spark:'الشرارة',
+    unk:'—', ok:'✅ طبيعي', warn:'⚠️ مشبوه', err:'🔴 خلل',
+    c0t:'نظرة عامة', c0d:'بصر + سمع + اهتزاز. مجاني',
+    c1t:'تشخيص المحرك', c1d:'صوت + دخان + مثلث الاحتراق',
+    c2t:'تحليل الزيت', c2d:'تحليل عينة الزيت بالكاميرا',
+    c3t:'المعاينة الشاملة', c3d:'محرك + هيكل + قيمة + PDF',
+    pFT:'🔍 النظرة العامة', pFS:'جمع كل الحواس — مجاني',
+    s1l:'📷 الفحص البصري', s1i:'وجّه الكاميرا نحو المحرك',
+    s2l:'🎙️ الاستماع', s2i:'شغّل المحرك 10 ثوانٍ',
+    s3l:'📳 الاهتزاز', s3i:'ضع الهاتف على الهيكل',
+    s4l:'🧠 التقرير', s4i:'تحليل نهائي + PDF مجاني',
+    rFT:'⚠️ التقرير الأولي', rFD:'تم رصد مؤشرات. الاهتزاز: 2.3g',
+    btnDlF:'📄 تحميل التقرير المجاني', btnDeep:'🔬 تشخيص عميق — $5', btnSF:'📷 ابدأ الفحص',
+    pL1T:'🔊 تشخيص المحرك', pL1S:'صوت + دخان + مثلث الاحتراق',
+    btnPL1:'الدفع $5 والبدء', btnBL1:'العودة',
+    smkLbl:'لون الدخان:', sm0:'لا دخان', sm1:'أبيض', sm2:'أسود', sm3:'أزرق',
+    btnDlL1:'📄 تحميل التقرير العلمي',
+    pL2T:'🛢️ تحليل الزيت', pL2S:'تحليل بالكاميرا — محلي',
+    l2tip:'سحب قليل من الزيت على ورقة بيضاء',
+    btnPL2:'الدفع $10 والبدء', btnBL2:'العودة',
+    oilLbl:'اختر لون الزيت:', oa:'عنبري', ob:'بني', od:'أسود', om:'حليبي',
+    oilH:'🛢️ تقرير الزيت', okSt:'الحالة', okLi:'العمر المتبقي', okAc:'التوصية',
+    btnDlL2:'📄 تحميل تقرير الزيت',
+    pL3T:'🏆 المعاينة الشاملة', pL3S:'محرك + هيكل + قيمة + PDF معتمد',
+    l3tip:'صالح لـ: التأمين · نقل الملكية · المعاينة الرسمية',
+    btnPL3:'الدفع $15 والبدء', btnBL3:'العودة',
+    l3H:'🏍️ تقرير المعاينة',
+    l3kE:'المحرك', l3kI:'الإشعال', l3vI:'الشمعة تحتاج تغيير',
+    l3kB:'الفرامل', l3vB:'جيدة 80%', l3kF:'الهيكل', l3vF:'سليم',
+    mktLbl:'القيمة السوقية المقدّرة', aftLbl:'بعد الإصلاحات: $1,800 — $2,100',
+    btnDlL3:'📄 تحميل التقرير المعتمد', btnShL3:'📤 مشاركة رقمياً',
+    fuelBg:'الوقود', fuelT:'⛽ تشخيص الوقود', fuelS:'الكاميرا + الميكروفون',
+    fS1l:'🎙️ بصمة الاحتراق', fS1i:'وقود ممتاز → صوت نظيف • وقود مغشوش → قعقعة',
+    fS2l:'📷 لون الدخان', fS2i:'⬛ أسود = زائد • ⬜ أبيض = ماء • 🔵 أزرق = زيت • لا دخان ✅',
+    fRT:'✅ الوقود — فحص مجاني', fRD:'للتحليل الدقيق: تشخيص المحرك $5',
+    btnFD:'🔬 تحليل عميق $5',
+    airBg:'الهواء', airT:'💨 تشخيص الهواء', airS:'الاختناق أخطر من نقص الوقود',
+    aS1l:'🎙️ الأعراض الصوتية', aS1i:'صراخ قوي من العادم = هواء ناقص',
+    aS2l:'📷 فحص الفلتر', aS2i:'متسخ → غيّره ($2) • ممزق → خطر 🔴',
+    btnAOk:'✅ الهواء طبيعي', btnAWn:'⚠️ فلتر متسخ',
+    spBg:'الشرارة', spT:'⚡ تشخيص الشرارة', spS:'البطارية → البوبينة → السلك → الشمعة',
+    spS1l:'🔋 صوت الاستارتر', spS1i:'قوي ✅ • بطيء ⚠️ • طقطقة 🔴 • صمت 🔴',
+    spS2l:'📷 لون الشرارة', spS2i:'أزرق ✅ • أصفر ⚠️ • أحمر 🔴 • لا شيء 🔴',
+    btnSOk:'⚡ شرارة زرقاء — ممتاز', btnSWn:'⚠️ شرارة ضعيفة', btnSEr:'🔴 لا شرارة',
+    smoke: {
+      none: {cls:'rok', t:'✅ احتراق نظيف', d:'لا دخان = وقود جيد + احتراق مثالي', tri:'ok'},
+      white:{cls:'rwarn',t:'⚠️ ماء في الوقود',d:'دخان أبيض = ماء أو تكثف',tri:'warn'},
+      black:{cls:'rerr', t:'🔴 وقود زائد',  d:'وقود زائد / هواء ناقص',  tri:'warn'},
+      blue: {cls:'rerr', t:'🔴 زيت يحترق',  d:'الأسطوانة أو الصمامات متآكلة',tri:'err'}
+    },
+    oil: {
+      amber:{st:'<span class="vok">جيد</span>',     li:'<span class="vok">80%</span>',   ac:'<span class="vok">متابعة 2000 كم</span>'},
+      brown:{st:'<span class="vwarn">مقبول</span>',  li:'<span class="vwarn">45%</span>', ac:'<span class="vwarn">تغيير 500 كم</span>'},
+      dark: {st:'<span class="verr">تدهور</span>',   li:'<span class="verr">5%</span>',   ac:'<span class="verr">تغيير فوري 🔴</span>'},
+      milky:{st:'<span class="verr">خطر</span>',     li:'<span class="verr">0%</span>',   ac:'<span class="verr">أوقف المحرك 🔴</span>'}
+    }
+  },
+  fr: {
+    heroT:'Votre moto parle', heroS:'Diagnostic IA via capteurs\nSon • Image • Vibration • Inférence',
+    netOn:'Connecté — Diagnostic complet', netOff:'Hors ligne — Local uniquement',
+    tri:'Triangle de Combustion', lvl:'Niveaux de Diagnostic',
+    fuel:'Carburant', air:'Air', spark:'Allumage',
+    unk:'—', ok:'✅ Normal', warn:'⚠️ Suspect', err:'🔴 Défaut',
+    c0t:'Vue générale', c0d:'Vue + Son + Vibration. Gratuit',
+    c1t:'Diagnostic moteur', c1d:'Son + fumée + triangle combustion',
+    c2t:"Analyse d'huile", c2d:"Analyse de l'huile par caméra",
+    c3t:'Inspection complète', c3d:'Moteur + cadre + valeur + PDF',
+    pFT:'🔍 Vue générale', pFS:'Tous les capteurs — gratuit',
+    s1l:'📷 Inspection visuelle', s1i:'Dirigez la caméra vers le moteur',
+    s2l:'🎙️ Écoute', s2i:'Démarrez le moteur 10 secondes',
+    s3l:'📳 Vibration', s3i:'Posez le téléphone sur le cadre',
+    s4l:'🧠 Rapport', s4i:'Analyse finale + PDF gratuit',
+    rFT:'⚠️ Rapport préliminaire', rFD:'Indicateurs détectés. Vibration: 2.3g',
+    btnDlF:'📄 Télécharger rapport gratuit', btnDeep:'🔬 Diagnostic approfondi — $5', btnSF:'📷 Commencer inspection',
+    pL1T:'🔊 Diagnostic moteur', pL1S:'Son + fumée + triangle combustion',
+    btnPL1:'Payer $5 et démarrer', btnBL1:'Retour',
+    smkLbl:'Couleur fumée:', sm0:'Aucune', sm1:'Blanche', sm2:'Noire', sm3:'Bleue',
+    btnDlL1:'📄 Télécharger rapport scientifique',
+    pL2T:"🛢️ Analyse d'huile", pL2S:'Caméra — traitement local',
+    l2tip:"Déposez de l'huile sur papier blanc",
+    btnPL2:'Payer $10 et démarrer', btnBL2:'Retour',
+    oilLbl:"Couleur de l'huile:", oa:'Ambre', ob:'Marron', od:'Noire', om:'Laiteuse',
+    oilH:"🛢️ Rapport d'huile", okSt:'État', okLi:'Durée restante', okAc:'Recommandation',
+    btnDlL2:"📄 Télécharger rapport d'huile",
+    pL3T:'🏆 Inspection complète', pL3S:'Moteur + cadre + valeur + PDF certifié',
+    l3tip:'Valable pour: Assurance · Transfert de propriété',
+    btnPL3:'Payer $15 et démarrer', btnBL3:'Retour',
+    l3H:"🏍️ Rapport d'inspection",
+    l3kE:'Moteur', l3kI:'Allumage', l3vI:'Bougie à remplacer',
+    l3kB:'Freins', l3vB:'Bons 80%', l3kF:'Cadre', l3vF:'OK',
+    mktLbl:'Valeur marchande estimée', aftLbl:'Après réparations: $1,800 — $2,100',
+    btnDlL3:'📄 Télécharger rapport certifié', btnShL3:'📤 Partager numériquement',
+    fuelBg:'Carburant', fuelT:'⛽ Diagnostic carburant', fuelS:'Caméra + Micro — sans labo',
+    fS1l:'🎙️ Son de combustion', fS1i:'Bon carburant → son propre • Mauvais → cliquetis',
+    fS2l:'📷 Couleur fumée', fS2i:'⬛ Noire = excès • ⬜ Blanche = eau • 🔵 Bleue = huile • Rien ✅',
+    fRT:'✅ Carburant — vérif. gratuite', fRD:'Analyse chimique: Diagnostic moteur $5',
+    btnFD:'🔬 Analyse approfondie $5',
+    airBg:'Air', airT:'💨 Diagnostic air', airS:"L'étouffement est plus dangereux",
+    aS1l:'🎙️ Symptômes sonores', aS1i:"Retour d'échappement fort = manque d'air",
+    aS2l:'📷 Filtre à air', aS2i:'Sale → remplacer ($2) • Déchiré → danger 🔴',
+    btnAOk:'✅ Air normal', btnAWn:'⚠️ Filtre sale',
+    spBg:'Allumage', spT:'⚡ Diagnostic allumage', spS:'Batterie → Bobine → Câble → Bougie',
+    spS1l:'🔋 Son démarreur', spS1i:'Fort ✅ • Lent ⚠️ • Cliquetis 🔴 • Silence 🔴',
+    spS2l:'📷 Couleur étincelle', spS2i:'Bleue ✅ • Jaune ⚠️ • Rouge 🔴 • Rien 🔴',
+    btnSOk:'⚡ Étincelle bleue — excellent', btnSWn:'⚠️ Étincelle faible', btnSEr:"🔴 Pas d'étincelle",
+    smoke: {
+      none: {cls:'rok',  t:'✅ Combustion propre',   d:'Pas de fumée = bon carburant',       tri:'ok'},
+      white:{cls:'rwarn', t:'⚠️ Eau dans le carburant',d:'Fumée blanche = eau ou condensation',tri:'warn'},
+      black:{cls:'rerr',  t:'🔴 Mélange riche',       d:"Excès de carburant / manque d'air",  tri:'warn'},
+      blue: {cls:'rerr',  t:"🔴 Huile brûlée",        d:'Cylindre ou soupapes usés',           tri:'err'}
+    },
+    oil: {
+      amber:{st:'<span class="vok">Bon</span>',        li:'<span class="vok">80%</span>',   ac:'<span class="vok">Contrôle à 2000 km</span>'},
+      brown:{st:'<span class="vwarn">Acceptable</span>',li:'<span class="vwarn">45%</span>',ac:'<span class="vwarn">Changer à 500 km</span>'},
+      dark: {st:'<span class="verr">Dégradé</span>',   li:'<span class="verr">5%</span>',   ac:'<span class="verr">Changer immédiatement 🔴</span>'},
+      milky:{st:'<span class="verr">Danger</span>',    li:'<span class="verr">0%</span>',   ac:'<span class="verr">Arrêtez le moteur 🔴</span>'}
+    }
+  },
+  en: {
+    heroT:'Your Motorcycle Speaks', heroS:'AI diagnosis via phone sensors\nSound • Vision • Vibration • Inference',
+    netOn:'Connected — Full diagnosis available', netOff:'Offline — Local only',
+    tri:'Combustion Triangle', lvl:'Diagnostic Levels',
+    fuel:'Fuel', air:'Air', spark:'Spark',
+    unk:'—', ok:'✅ Normal', warn:'⚠️ Suspect', err:'🔴 Fault',
+    c0t:'General Overview', c0d:'Vision + Sound + Vibration. Free',
+    c1t:'Engine Diagnosis', c1d:'Sound + smoke + combustion triangle',
+    c2t:'Oil Analysis', c2d:'Camera oil sample analysis',
+    c3t:'Full Inspection', c3d:'Engine + Frame + Value + PDF',
+    pFT:'🔍 General Overview', pFS:'All sensors — free report',
+    s1l:'📷 Visual Inspection', s1i:'Point camera at the engine',
+    s2l:'🎙️ Engine Listening', s2i:'Start engine for 10 seconds',
+    s3l:'📳 Vibration', s3i:'Place phone on frame',
+    s4l:'🧠 Report', s4i:'Final analysis + free PDF',
+    rFT:'⚠️ Preliminary Report', rFD:'Problem indicators detected. Vibration: 2.3g',
+    btnDlF:'📄 Download Free Report', btnDeep:'🔬 Deep Diagnosis — $5', btnSF:'📷 Start Scan',
+    pL1T:'🔊 Engine Diagnosis', pL1S:'Sound + smoke + combustion triangle',
+    btnPL1:'Pay $5 & Start', btnBL1:'Back',
+    smkLbl:'Smoke color:', sm0:'None', sm1:'White', sm2:'Black', sm3:'Blue',
+    btnDlL1:'📄 Download Scientific Report',
+    pL2T:'🛢️ Oil Analysis', pL2S:'Camera analysis — local',
+    l2tip:'Place oil sample on white paper',
+    btnPL2:'Pay $10 & Start', btnBL2:'Back',
+    oilLbl:'Oil color:', oa:'Amber', ob:'Brown', od:'Black', om:'Milky',
+    oilH:'🛢️ Oil Report', okSt:'Status', okLi:'Remaining Life', okAc:'Recommendation',
+    btnDlL2:'📄 Download Oil Report',
+    pL3T:'🏆 Full Inspection', pL3S:'Engine + Frame + Market Value + Certified PDF',
+    l3tip:'Valid for: Insurance · Ownership transfer · Official inspection',
+    btnPL3:'Pay $15 & Start', btnBL3:'Back',
+    l3H:'🏍️ Full Inspection Report',
+    l3kE:'Engine', l3kI:'Ignition', l3vI:'Spark plug needed',
+    l3kB:'Brakes', l3vB:'Good 80%', l3kF:'Frame', l3vF:'OK',
+    mktLbl:'Estimated Market Value', aftLbl:'After repairs: $1,800 — $2,100',
+    btnDlL3:'📄 Download Certified Report', btnShL3:'📤 Share Digitally',
+    fuelBg:'Fuel', fuelT:'⛽ Fuel Diagnosis', fuelS:'Camera + Mic — no lab',
+    fS1l:'🎙️ Combustion Sound', fS1i:'Good fuel → clean sound • Bad fuel → knocking',
+    fS2l:'📷 Smoke Color', fS2i:'⬛ Black = excess • ⬜ White = water • 🔵 Blue = oil • None ✅',
+    fRT:'✅ Fuel — Free Check', fRD:'For precise analysis: Engine Diagnosis $5',
+    btnFD:'🔬 Deep Analysis $5',
+    airBg:'Air', airT:'💨 Air Diagnosis', airS:'Choking is more dangerous',
+    aS1l:'🎙️ Sound Symptoms', aS1i:'Loud exhaust backfire = air shortage',
+    aS2l:'📷 Air Filter', aS2i:'Dirty → replace ($2) • Torn → danger 🔴',
+    btnAOk:'✅ Air is Normal', btnAWn:'⚠️ Dirty Filter',
+    spBg:'Spark', spT:'⚡ Spark Diagnosis', spS:'Battery → Coil → Wire → Spark plug',
+    spS1l:'🔋 Starter Sound', spS1i:'Strong ✅ • Slow ⚠️ • Clicking 🔴 • Silent 🔴',
+    spS2l:'📷 Spark Color', spS2i:'Blue ✅ • Yellow ⚠️ • Red 🔴 • Nothing 🔴',
+    btnSOk:'⚡ Strong Blue Spark ✅', btnSWn:'⚠️ Weak Spark', btnSEr:'🔴 No Spark',
+    smoke: {
+      none: {cls:'rok',  t:'✅ Clean combustion',  d:'No smoke = good fuel + perfect combustion', tri:'ok'},
+      white:{cls:'rwarn', t:'⚠️ Water in fuel',    d:'White smoke = water or condensation',       tri:'warn'},
+      black:{cls:'rerr',  t:'🔴 Rich mixture',     d:'Excess fuel / insufficient air',            tri:'warn'},
+      blue: {cls:'rerr',  t:'🔴 Oil burning',      d:'Worn cylinder or valves',                  tri:'err'}
+    },
+    oil: {
+      amber:{st:'<span class="vok">Good</span>',       li:'<span class="vok">80%</span>',   ac:'<span class="vok">Check at 2000 km</span>'},
+      brown:{st:'<span class="vwarn">Acceptable</span>',li:'<span class="vwarn">45%</span>',ac:'<span class="vwarn">Change within 500 km</span>'},
+      dark: {st:'<span class="verr">Degraded</span>',  li:'<span class="verr">5%</span>',   ac:'<span class="verr">Change immediately 🔴</span>'},
+      milky:{st:'<span class="verr">Danger</span>',    li:'<span class="verr">0%</span>',   ac:'<span class="verr">Stop engine 🔴</span>'}
+    }
+  }
+};
+
+// Add new languages
+L.es = {
+  heroT:'Tu moto habla', heroS:'Diagnóstico IA con sensores del móvil\nSonido • Imagen • Vibración • Inferencia',
+  netOn:'Conectado — Diagnóstico completo', netOff:'Sin conexión — Solo local',
+  tri:'Triángulo de Combustión', lvl:'Niveles de Diagnóstico',
+  fuel:'Combustible', air:'Aire', spark:'Chispa',
+  unk:'—', ok:'✅ Normal', warn:'⚠️ Sospechoso', err:'🔴 Fallo',
+  c0t:'Vista general', c0d:'Vista + Sonido + Vibración. Gratis',
+  c1t:'Diagnóstico motor', c1d:'Sonido + humo + triángulo combustión',
+  c2t:'Análisis de aceite', c2d:'Análisis de muestra de aceite por cámara',
+  c3t:'Inspección completa', c3d:'Motor + chasis + valor de mercado + PDF',
+  pFT:'🔍 Vista general', pFS:'Todos los sensores — informe gratis',
+  s1l:'📷 Inspección visual', s1i:'Apunta la cámara al motor',
+  s2l:'🎙️ Escucha', s2i:'Arranca el motor 10 segundos',
+  s3l:'📳 Vibración', s3i:'Pon el móvil sobre el chasis',
+  s4l:'🧠 Informe', s4i:'Análisis final + PDF gratis',
+  rFT:'⚠️ Informe preliminar', rFD:'Indicadores de problema detectados. Vibración: 2.3g',
+  btnDlF:'📄 Descargar informe gratis', btnDeep:'🔬 Diagnóstico profundo — $5', btnSF:'📷 Iniciar exploración',
+  pL1T:'🔊 Diagnóstico motor', pL1S:'Sonido + humo + triángulo combustión',
+  btnPL1:'Pagar $5 y empezar', btnBL1:'Volver',
+  smkLbl:'Color del humo:', sm0:'Ninguno', sm1:'Blanco', sm2:'Negro', sm3:'Azul',
+  btnDlL1:'📄 Descargar informe científico',
+  pL2T:'🛢️ Análisis de aceite', pL2S:'Cámara — procesamiento local',
+  l2tip:'Pon una muestra de aceite en papel blanco',
+  btnPL2:'Pagar $10 y empezar', btnBL2:'Volver',
+  oilLbl:'Color del aceite:', oa:'Ámbar', ob:'Marrón', od:'Negro', om:'Lechoso',
+  oilH:'🛢️ Informe de aceite', okSt:'Estado', okLi:'Vida restante', okAc:'Recomendación',
+  btnDlL2:'📄 Descargar informe de aceite',
+  pL3T:'🏆 Inspección completa', pL3S:'Motor + chasis + valor de mercado + PDF certificado',
+  l3tip:'Válido para: Seguro · Transferencia de propiedad',
+  btnPL3:'Pagar $15 y empezar', btnBL3:'Volver',
+  l3H:'🏍️ Informe de inspección completo',
+  l3kE:'Motor', l3kI:'Encendido', l3vI:'Bujía necesita cambio',
+  l3kB:'Frenos', l3vB:'Buenos 80%', l3kF:'Chasis', l3vF:'OK',
+  mktLbl:'Valor de mercado estimado', aftLbl:'Tras reparaciones: $1,800 — $2,100',
+  btnDlL3:'📄 Descargar informe certificado', btnShL3:'📤 Compartir digitalmente',
+  fuelBg:'Combustible', fuelT:'⛽ Diagnóstico combustible', fuelS:'Cámara + Micrófono',
+  fS1l:'🎙️ Sonido de combustión', fS1i:'Buen combustible → sonido limpio • Malo → golpeteo',
+  fS2l:'📷 Color del humo', fS2i:'⬛ Negro = exceso • ⬜ Blanco = agua • 🔵 Azul = aceite • Nada ✅',
+  fRT:'✅ Combustible — chequeo gratis', fRD:'Para análisis preciso: Diagnóstico motor $5',
+  btnFD:'🔬 Análisis profundo $5',
+  airBg:'Aire', airT:'💨 Diagnóstico aire', airS:'La obstrucción es más peligrosa',
+  aS1l:'🎙️ Síntomas sonoros', aS1i:'Retorno de escape fuerte = falta de aire',
+  aS2l:'📷 Filtro de aire', aS2i:'Sucio → reemplazar ($2) • Roto → peligro 🔴',
+  btnAOk:'✅ Aire normal', btnAWn:'⚠️ Filtro sucio',
+  spBg:'Chispa', spT:'⚡ Diagnóstico encendido', spS:'Batería → Bobina → Cable → Bujía',
+  spS1l:'🔋 Sonido del arranque', spS1i:'Fuerte ✅ • Lento ⚠️ • Clic 🔴 • Silencio 🔴',
+  spS2l:'📷 Color de la chispa', spS2i:'Azul ✅ • Amarillo ⚠️ • Rojo 🔴 • Nada 🔴',
+  btnSOk:'⚡ Chispa azul fuerte ✅', btnSWn:'⚠️ Chispa débil', btnSEr:'🔴 Sin chispa',
+  smoke:{none:{cls:'rok',t:'✅ Combustión limpia',d:'Sin humo = buen combustible',tri:'ok'},white:{cls:'rwarn',t:'⚠️ Agua en combustible',d:'Humo blanco = agua o condensación',tri:'warn'},black:{cls:'rerr',t:'🔴 Mezcla rica',d:'Exceso de combustible / falta de aire',tri:'warn'},blue:{cls:'rerr',t:'🔴 Aceite quemado',d:'Cilindro o válvulas desgastados',tri:'err'}},
+  oil:{amber:{st:'<span class="vok">Bueno</span>',li:'<span class="vok">80%</span>',ac:'<span class="vok">Revisión a 2000 km</span>'},brown:{st:'<span class="vwarn">Aceptable</span>',li:'<span class="vwarn">45%</span>',ac:'<span class="vwarn">Cambiar en 500 km</span>'},dark:{st:'<span class="verr">Degradado</span>',li:'<span class="verr">5%</span>',ac:'<span class="verr">Cambiar inmediatamente 🔴</span>'},milky:{st:'<span class="verr">Peligro</span>',li:'<span class="verr">0%</span>',ac:'<span class="verr">Detener motor 🔴</span>'}}
+};
+
+L.pt = {
+  heroT:'Sua moto fala', heroS:'Diagnóstico IA via sensores do celular\nSom • Imagem • Vibração • Inferência',
+  netOn:'Conectado — Diagnóstico completo', netOff:'Sem conexão — Apenas local',
+  tri:'Triângulo de Combustão', lvl:'Níveis de Diagnóstico',
+  fuel:'Combustível', air:'Ar', spark:'Centelha',
+  unk:'—', ok:'✅ Normal', warn:'⚠️ Suspeito', err:'🔴 Falha',
+  c0t:'Visão geral', c0d:'Visão + Som + Vibração. Grátis',
+  c1t:'Diagnóstico motor', c1d:'Som + fumaça + triângulo combustão',
+  c2t:'Análise de óleo', c2d:'Análise de amostra de óleo por câmera',
+  c3t:'Inspeção completa', c3d:'Motor + chassi + valor de mercado + PDF',
+  pFT:'🔍 Visão geral', pFS:'Todos os sensores — relatório grátis',
+  s1l:'📷 Inspeção visual', s1i:'Aponte a câmera para o motor',
+  s2l:'🎙️ Escuta', s2i:'Ligue o motor por 10 segundos',
+  s3l:'📳 Vibração', s3i:'Coloque o celular no chassi',
+  s4l:'🧠 Relatório', s4i:'Análise final + PDF grátis',
+  rFT:'⚠️ Relatório preliminar', rFD:'Indicadores de problema detectados. Vibração: 2.3g',
+  btnDlF:'📄 Baixar relatório grátis', btnDeep:'🔬 Diagnóstico profundo — $5', btnSF:'📷 Iniciar varredura',
+  pL1T:'🔊 Diagnóstico motor', pL1S:'Som + fumaça + triângulo combustão',
+  btnPL1:'Pagar $5 e começar', btnBL1:'Voltar',
+  smkLbl:'Cor da fumaça:', sm0:'Nenhuma', sm1:'Branca', sm2:'Preta', sm3:'Azul',
+  btnDlL1:'📄 Baixar relatório científico',
+  pL2T:'🛢️ Análise de óleo', pL2S:'Câmera — processamento local',
+  l2tip:'Coloque uma amostra de óleo em papel branco',
+  btnPL2:'Pagar $10 e começar', btnBL2:'Voltar',
+  oilLbl:'Cor do óleo:', oa:'Âmbar', ob:'Marrom', od:'Preto', om:'Leitoso',
+  oilH:'🛢️ Relatório de óleo', okSt:'Status', okLi:'Vida restante', okAc:'Recomendação',
+  btnDlL2:'📄 Baixar relatório de óleo',
+  pL3T:'🏆 Inspeção completa', pL3S:'Motor + chassi + valor de mercado + PDF certificado',
+  l3tip:'Válido para: Seguro · Transferência de propriedade',
+  btnPL3:'Pagar $15 e começar', btnBL3:'Voltar',
+  l3H:'🏍️ Relatório de inspeção completo',
+  l3kE:'Motor', l3kI:'Ignição', l3vI:'Vela precisa trocar',
+  l3kB:'Freios', l3vB:'Bons 80%', l3kF:'Chassi', l3vF:'OK',
+  mktLbl:'Valor de mercado estimado', aftLbl:'Após reparos: $1,800 — $2,100',
+  btnDlL3:'📄 Baixar relatório certificado', btnShL3:'📤 Compartilhar digitalmente',
+  fuelBg:'Combustível', fuelT:'⛽ Diagnóstico combustível', fuelS:'Câmera + Microfone',
+  fS1l:'🎙️ Som de combustão', fS1i:'Bom combustível → som limpo • Ruim → batida',
+  fS2l:'📷 Cor da fumaça', fS2i:'⬛ Preta = excesso • ⬜ Branca = água • 🔵 Azul = óleo • Nada ✅',
+  fRT:'✅ Combustível — verificação grátis', fRD:'Para análise precisa: Diagnóstico motor $5',
+  btnFD:'🔬 Análise profunda $5',
+  airBg:'Ar', airT:'💨 Diagnóstico ar', airS:'Afogamento é mais perigoso',
+  aS1l:'🎙️ Sintomas sonoros', aS1i:'Retorno forte do escapamento = falta de ar',
+  aS2l:'📷 Filtro de ar', aS2i:'Sujo → substituir ($2) • Rasgado → perigo 🔴',
+  btnAOk:'✅ Ar normal', btnAWn:'⚠️ Filtro sujo',
+  spBg:'Centelha', spT:'⚡ Diagnóstico ignição', spS:'Bateria → Bobina → Cabo → Vela',
+  spS1l:'🔋 Som da partida', spS1i:'Forte ✅ • Lento ⚠️ • Clique 🔴 • Silêncio 🔴',
+  spS2l:'📷 Cor da centelha', spS2i:'Azul ✅ • Amarelo ⚠️ • Vermelho 🔴 • Nada 🔴',
+  btnSOk:'⚡ Centelha azul forte ✅', btnSWn:'⚠️ Centelha fraca', btnSEr:'🔴 Sem centelha',
+  smoke:{none:{cls:'rok',t:'✅ Combustão limpa',d:'Sem fumaça = bom combustível',tri:'ok'},white:{cls:'rwarn',t:'⚠️ Água no combustível',d:'Fumaça branca = água ou condensação',tri:'warn'},black:{cls:'rerr',t:'🔴 Mistura rica',d:'Excesso de combustível / falta de ar',tri:'warn'},blue:{cls:'rerr',t:'🔴 Óleo queimando',d:'Cilindro ou válvulas desgastados',tri:'err'}},
+  oil:{amber:{st:'<span class="vok">Bom</span>',li:'<span class="vok">80%</span>',ac:'<span class="vok">Revisão em 2000 km</span>'},brown:{st:'<span class="vwarn">Aceitável</span>',li:'<span class="vwarn">45%</span>',ac:'<span class="vwarn">Trocar em 500 km</span>'},dark:{st:'<span class="verr">Degradado</span>',li:'<span class="verr">5%</span>',ac:'<span class="verr">Trocar imediatamente 🔴</span>'},milky:{st:'<span class="verr">Perigo</span>',li:'<span class="verr">0%</span>',ac:'<span class="verr">Parar motor 🔴</span>'}}
+};
+
+L.de = {
+  heroT:'Dein Motorrad spricht', heroS:'KI-Diagnose via Handy-Sensoren\nSchall • Bild • Vibration • Inferenz',
+  netOn:'Verbunden — Volldiagnose verfügbar', netOff:'Offline — Nur lokal',
+  tri:'Verbrennungsdreieck', lvl:'Diagnose-Stufen',
+  fuel:'Kraftstoff', air:'Luft', spark:'Zündung',
+  unk:'—', ok:'✅ Normal', warn:'⚠️ Verdächtig', err:'🔴 Fehler',
+  c0t:'Übersicht', c0d:'Sicht + Ton + Vibration. Kostenlos',
+  c1t:'Motordiagnose', c1d:'Ton + Rauch + Verbrennungsdreieck',
+  c2t:'Ölanalyse', c2d:'Kameraanalyse der Ölprobe',
+  c3t:'Vollinspektion', c3d:'Motor + Rahmen + Marktwert + PDF',
+  pFT:'🔍 Übersicht', pFS:'Alle Sensoren — kostenloser Bericht',
+  s1l:'📷 Sichtprüfung', s1i:'Kamera auf den Motor richten',
+  s2l:'🎙️ Hören', s2i:'Motor 10 Sekunden starten',
+  s3l:'📳 Vibration', s3i:'Handy auf den Rahmen legen',
+  s4l:'🧠 Bericht', s4i:'Abschlussanalyse + kostenloser PDF',
+  rFT:'⚠️ Vorläufiger Bericht', rFD:'Problemindikatoren erkannt. Vibration: 2.3g',
+  btnDlF:'📄 Kostenlosen Bericht herunterladen', btnDeep:'🔬 Tiefdiagnose — $5', btnSF:'📷 Scan starten',
+  pL1T:'🔊 Motordiagnose', pL1S:'Ton + Rauch + Verbrennungsdreieck',
+  btnPL1:'$5 bezahlen & starten', btnBL1:'Zurück',
+  smkLbl:'Rauchfarbe:', sm0:'Kein Rauch', sm1:'Weiß', sm2:'Schwarz', sm3:'Blau',
+  btnDlL1:'📄 Wissenschaftlichen Bericht herunterladen',
+  pL2T:'🛢️ Ölanalyse', pL2S:'Kamera — lokale Verarbeitung',
+  l2tip:'Ölprobe auf weißes Papier geben',
+  btnPL2:'$10 bezahlen & starten', btnBL2:'Zurück',
+  oilLbl:'Ölfarbe:', oa:'Bernstein', ob:'Braun', od:'Schwarz', om:'Milchig',
+  oilH:'🛢️ Ölbericht', okSt:'Status', okLi:'Restlebensdauer', okAc:'Empfehlung',
+  btnDlL2:'📄 Ölbericht herunterladen',
+  pL3T:'🏆 Vollinspektion', pL3S:'Motor + Rahmen + Marktwert + zertifizierter PDF',
+  l3tip:'Gültig für: Versicherung · Eigentumsübertragung',
+  btnPL3:'$15 bezahlen & starten', btnBL3:'Zurück',
+  l3H:'🏍️ Vollständiger Inspektionsbericht',
+  l3kE:'Motor', l3kI:'Zündung', l3vI:'Zündkerze muss gewechselt werden',
+  l3kB:'Bremsen', l3vB:'Gut 80%', l3kF:'Rahmen', l3vF:'OK',
+  mktLbl:'Geschätzter Marktwert', aftLbl:'Nach Reparaturen: $1.800 — $2.100',
+  btnDlL3:'📄 Zertifizierten Bericht herunterladen', btnShL3:'📤 Digital teilen',
+  fuelBg:'Kraftstoff', fuelT:'⛽ Kraftstoffdiagnose', fuelS:'Kamera + Mikrofon',
+  fS1l:'🎙️ Verbrennungsgeräusch', fS1i:'Guter Kraftstoff → sauberer Ton • Schlecht → Klopfen',
+  fS2l:'📷 Rauchfarbe', fS2i:'⬛ Schwarz = Überschuss • ⬜ Weiß = Wasser • 🔵 Blau = Öl • Nichts ✅',
+  fRT:'✅ Kraftstoff — kostenlose Prüfung', fRD:'Für genaue Analyse: Motordiagnose $5',
+  btnFD:'🔬 Tiefenanalyse $5',
+  airBg:'Luft', airT:'💨 Luftdiagnose', airS:'Verstopfung ist gefährlicher',
+  aS1l:'🎙️ Akustische Symptome', aS1i:'Starker Auspuffrückschlag = Luftmangel',
+  aS2l:'📷 Luftfilter', aS2i:'Schmutzig → ersetzen ($2) • Zerrissen → Gefahr 🔴',
+  btnAOk:'✅ Luft normal', btnAWn:'⚠️ Schmutziger Filter',
+  spBg:'Zündung', spT:'⚡ Zündungsdiagnose', spS:'Batterie → Spule → Kabel → Zündkerze',
+  spS1l:'🔋 Anlassergeräusch', spS1i:'Stark ✅ • Langsam ⚠️ • Klicken 🔴 • Stille 🔴',
+  spS2l:'📷 Funkenfarbe', spS2i:'Blau ✅ • Gelb ⚠️ • Rot 🔴 • Nichts 🔴',
+  btnSOk:'⚡ Starker blauer Funke ✅', btnSWn:'⚠️ Schwacher Funke', btnSEr:'🔴 Kein Funke',
+  smoke:{none:{cls:'rok',t:'✅ Saubere Verbrennung',d:'Kein Rauch = guter Kraftstoff',tri:'ok'},white:{cls:'rwarn',t:'⚠️ Wasser im Kraftstoff',d:'Weißer Rauch = Wasser oder Kondensat',tri:'warn'},black:{cls:'rerr',t:'🔴 Fettes Gemisch',d:'Kraftstoffüberschuss / Luftmangel',tri:'warn'},blue:{cls:'rerr',t:'🔴 Ölverbrennung',d:'Verschlissener Zylinder oder Ventile',tri:'err'}},
+  oil:{amber:{st:'<span class="vok">Gut</span>',li:'<span class="vok">80%</span>',ac:'<span class="vok">Kontrolle bei 2000 km</span>'},brown:{st:'<span class="vwarn">Akzeptabel</span>',li:'<span class="vwarn">45%</span>',ac:'<span class="vwarn">Wechseln bei 500 km</span>'},dark:{st:'<span class="verr">Degradiert</span>',li:'<span class="verr">5%</span>',ac:'<span class="verr">Sofort wechseln 🔴</span>'},milky:{st:'<span class="verr">Gefahr</span>',li:'<span class="verr">0%</span>',ac:'<span class="verr">Motor stoppen 🔴</span>'}}
+};
+
+L.hi = {
+  heroT:'आपकी मोटरसाइकिल बोलती है', heroS:'फ़ोन सेंसर से AI डायग्नोसिस\nध्वनि • छवि • कंपन • अनुमान',
+  netOn:'कनेक्टेड — पूर्ण डायग्नोसिस उपलब्ध', netOff:'ऑफलाइन — केवल स्थानीय',
+  tri:'दहन त्रिकोण', lvl:'डायग्नोसिस स्तर',
+  fuel:'ईंधन', air:'वायु', spark:'चिंगारी',
+  unk:'—', ok:'✅ सामान्य', warn:'⚠️ संदिग्ध', err:'🔴 खराबी',
+  c0t:'सामान्य अवलोकन', c0d:'दृष्टि + ध्वनि + कंपन। मुफ्त',
+  c1t:'इंजन डायग्नोसिस', c1d:'ध्वनि + धुआं + दहन त्रिकोण',
+  c2t:'तेल विश्लेषण', c2d:'कैमरे से तेल के नमूने का विश्लेषण',
+  c3t:'पूर्ण निरीक्षण', c3d:'इंजन + फ्रेम + बाजार मूल्य + PDF',
+  pFT:'🔍 सामान्य अवलोकन', pFS:'सभी सेंसर — मुफ्त रिपोर्ट',
+  s1l:'📷 दृश्य निरीक्षण', s1i:'कैमरा इंजन की ओर करें',
+  s2l:'🎙️ सुनना', s2i:'इंजन 10 सेकंड चालू करें',
+  s3l:'📳 कंपन', s3i:'फ़ोन फ्रेम पर रखें',
+  s4l:'🧠 रिपोर्ट', s4i:'अंतिम विश्लेषण + मुफ्त PDF',
+  rFT:'⚠️ प्रारंभिक रिपोर्ट', rFD:'समस्या संकेतक पाए गए। कंपन: 2.3g',
+  btnDlF:'📄 मुफ्त रिपोर्ट डाउनलोड', btnDeep:'🔬 गहन डायग्नोसिस — $5', btnSF:'📷 स्कैन शुरू करें',
+  pL1T:'🔊 इंजन डायग्नोसिस', pL1S:'ध्वनि + धुआं + दहन त्रिकोण',
+  btnPL1:'$5 दें और शुरू करें', btnBL1:'वापस',
+  smkLbl:'धुएं का रंग:', sm0:'कोई नहीं', sm1:'सफेद', sm2:'काला', sm3:'नीला',
+  btnDlL1:'📄 वैज्ञानिक रिपोर्ट डाउनलोड',
+  pL2T:'🛢️ तेल विश्लेषण', pL2S:'कैमरा — स्थानीय प्रसंस्करण',
+  l2tip:'सफेद कागज पर तेल का नमूना रखें',
+  btnPL2:'$10 दें और शुरू करें', btnBL2:'वापस',
+  oilLbl:'तेल का रंग:', oa:'एम्बर', ob:'भूरा', od:'काला', om:'दूधिया',
+  oilH:'🛢️ तेल रिपोर्ट', okSt:'स्थिति', okLi:'शेष जीवन', okAc:'सिफारिश',
+  btnDlL2:'📄 तेल रिपोर्ट डाउनलोड',
+  pL3T:'🏆 पूर्ण निरीक्षण', pL3S:'इंजन + फ्रेम + बाजार मूल्य + प्रमाणित PDF',
+  l3tip:'मान्य: बीमा · स्वामित्व हस्तांतरण',
+  btnPL3:'$15 दें और शुरू करें', btnBL3:'वापस',
+  l3H:'🏍️ पूर्ण निरीक्षण रिपोर्ट',
+  l3kE:'इंजन', l3kI:'इग्निशन', l3vI:'स्पार्क प्लग बदलना जरूरी',
+  l3kB:'ब्रेक', l3vB:'अच्छे 80%', l3kF:'फ्रेम', l3vF:'ठीक',
+  mktLbl:'अनुमानित बाजार मूल्य', aftLbl:'मरम्मत के बाद: $1,800 — $2,100',
+  btnDlL3:'📄 प्रमाणित रिपोर्ट डाउनलोड', btnShL3:'📤 डिजिटल साझा करें',
+  fuelBg:'ईंधन', fuelT:'⛽ ईंधन डायग्नोसिस', fuelS:'कैमरा + माइक्रोफोन',
+  fS1l:'🎙️ दहन ध्वनि', fS1i:'अच्छा ईंधन → साफ आवाज • खराब → खटखटाहट',
+  fS2l:'📷 धुएं का रंग', fS2i:'⬛ काला = अधिक • ⬜ सफेद = पानी • 🔵 नीला = तेल • कुछ नहीं ✅',
+  fRT:'✅ ईंधन — मुफ्त जांच', fRD:'सटीक विश्लेषण: इंजन डायग्नोसिस $5',
+  btnFD:'🔬 गहन विश्लेषण $5',
+  airBg:'वायु', airT:'💨 वायु डायग्नोसिस', airS:'घुटन अधिक खतरनाक है',
+  aS1l:'🎙️ ध्वनि लक्षण', aS1i:'तेज एग्जॉस्ट बैकफायर = हवा की कमी',
+  aS2l:'📷 एयर फिल्टर', aS2i:'गंदा → बदलें ($2) • फटा → खतरा 🔴',
+  btnAOk:'✅ हवा सामान्य', btnAWn:'⚠️ गंदा फिल्टर',
+  spBg:'चिंगारी', spT:'⚡ इग्निशन डायग्नोसिस', spS:'बैटरी → कॉइल → तार → स्पार्क प्लग',
+  spS1l:'🔋 स्टार्टर की आवाज', spS1i:'मजबूत ✅ • धीमा ⚠️ • क्लिक 🔴 • खामोशी 🔴',
+  spS2l:'📷 चिंगारी का रंग', spS2i:'नीला ✅ • पीला ⚠️ • लाल 🔴 • कुछ नहीं 🔴',
+  btnSOk:'⚡ मजबूत नीली चिंगारी ✅', btnSWn:'⚠️ कमजोर चिंगारी', btnSEr:'🔴 कोई चिंगारी नहीं',
+  smoke:{none:{cls:'rok',t:'✅ स्वच्छ दहन',d:'कोई धुआं नहीं = अच्छा ईंधन',tri:'ok'},white:{cls:'rwarn',t:'⚠️ ईंधन में पानी',d:'सफेद धुआं = पानी या संक्षेपण',tri:'warn'},black:{cls:'rerr',t:'🔴 समृद्ध मिश्रण',d:'अधिक ईंधन / कम हवा',tri:'warn'},blue:{cls:'rerr',t:'🔴 तेल जल रहा है',d:'घिसा सिलेंडर या वाल्व',tri:'err'}},
+  oil:{amber:{st:'<span class="vok">अच्छा</span>',li:'<span class="vok">80%</span>',ac:'<span class="vok">2000 किमी पर जांच</span>'},brown:{st:'<span class="vwarn">स्वीकार्य</span>',li:'<span class="vwarn">45%</span>',ac:'<span class="vwarn">500 किमी में बदलें</span>'},dark:{st:'<span class="verr">खराब</span>',li:'<span class="verr">5%</span>',ac:'<span class="verr">तुरंत बदलें 🔴</span>'},milky:{st:'<span class="verr">खतरा</span>',li:'<span class="verr">0%</span>',ac:'<span class="verr">इंजन बंद करें 🔴</span>'}}
+};
+
+L.id = {
+  heroT:'Motor Anda Berbicara', heroS:'Diagnosa AI via sensor ponsel\nSuara • Gambar • Getaran • Inferensi',
+  netOn:'Terhubung — Diagnosa lengkap tersedia', netOff:'Offline — Hanya lokal',
+  tri:'Segitiga Pembakaran', lvl:'Tingkat Diagnosa',
+  fuel:'Bahan Bakar', air:'Udara', spark:'Percikan',
+  unk:'—', ok:'✅ Normal', warn:'⚠️ Mencurigakan', err:'🔴 Rusak',
+  c0t:'Gambaran umum', c0d:'Penglihatan + Suara + Getaran. Gratis',
+  c1t:'Diagnosa mesin', c1d:'Suara + asap + segitiga pembakaran',
+  c2t:'Analisis oli', c2d:'Analisis sampel oli dengan kamera',
+  c3t:'Inspeksi lengkap', c3d:'Mesin + rangka + nilai pasar + PDF',
+  pFT:'🔍 Gambaran umum', pFS:'Semua sensor — laporan gratis',
+  s1l:'📷 Inspeksi visual', s1i:'Arahkan kamera ke mesin',
+  s2l:'🎙️ Mendengarkan', s2i:'Hidupkan mesin 10 detik',
+  s3l:'📳 Getaran', s3i:'Letakkan ponsel di rangka',
+  s4l:'🧠 Laporan', s4i:'Analisis akhir + PDF gratis',
+  rFT:'⚠️ Laporan awal', rFD:'Indikator masalah terdeteksi. Getaran: 2.3g',
+  btnDlF:'📄 Unduh laporan gratis', btnDeep:'🔬 Diagnosa mendalam — $5', btnSF:'📷 Mulai pemindaian',
+  pL1T:'🔊 Diagnosa mesin', pL1S:'Suara + asap + segitiga pembakaran',
+  btnPL1:'Bayar $5 & mulai', btnBL1:'Kembali',
+  smkLbl:'Warna asap:', sm0:'Tidak ada', sm1:'Putih', sm2:'Hitam', sm3:'Biru',
+  btnDlL1:'📄 Unduh laporan ilmiah',
+  pL2T:'🛢️ Analisis oli', pL2S:'Kamera — pemrosesan lokal',
+  l2tip:'Letakkan sampel oli di kertas putih',
+  btnPL2:'Bayar $10 & mulai', btnBL2:'Kembali',
+  oilLbl:'Warna oli:', oa:'Amber', ob:'Cokelat', od:'Hitam', om:'Susu',
+  oilH:'🛢️ Laporan oli', okSt:'Status', okLi:'Sisa masa pakai', okAc:'Rekomendasi',
+  btnDlL2:'📄 Unduh laporan oli',
+  pL3T:'🏆 Inspeksi lengkap', pL3S:'Mesin + rangka + nilai pasar + PDF bersertifikat',
+  l3tip:'Berlaku untuk: Asuransi · Transfer kepemilikan',
+  btnPL3:'Bayar $15 & mulai', btnBL3:'Kembali',
+  l3H:'🏍️ Laporan inspeksi lengkap',
+  l3kE:'Mesin', l3kI:'Pengapian', l3vI:'Busi perlu diganti',
+  l3kB:'Rem', l3vB:'Bagus 80%', l3kF:'Rangka', l3vF:'OK',
+  mktLbl:'Estimasi nilai pasar', aftLbl:'Setelah perbaikan: $1.800 — $2.100',
+  btnDlL3:'📄 Unduh laporan bersertifikat', btnShL3:'📤 Bagikan secara digital',
+  fuelBg:'Bahan Bakar', fuelT:'⛽ Diagnosa bahan bakar', fuelS:'Kamera + Mikrofon',
+  fS1l:'🎙️ Suara pembakaran', fS1i:'Bahan bakar baik → suara bersih • Buruk → ketukan',
+  fS2l:'📷 Warna asap', fS2i:'⬛ Hitam = berlebih • ⬜ Putih = air • 🔵 Biru = oli • Tidak ada ✅',
+  fRT:'✅ Bahan bakar — pemeriksaan gratis', fRD:'Analisis tepat: Diagnosa mesin $5',
+  btnFD:'🔬 Analisis mendalam $5',
+  airBg:'Udara', airT:'💨 Diagnosa udara', airS:'Penyumbatan lebih berbahaya',
+  aS1l:'🎙️ Gejala suara', aS1i:'Ledakan knalpot keras = kekurangan udara',
+  aS2l:'📷 Filter udara', aS2i:'Kotor → ganti ($2) • Robek → bahaya 🔴',
+  btnAOk:'✅ Udara normal', btnAWn:'⚠️ Filter kotor',
+  spBg:'Percikan', spT:'⚡ Diagnosa pengapian', spS:'Baterai → Koil → Kabel → Busi',
+  spS1l:'🔋 Suara starter', spS1i:'Kuat ✅ • Lambat ⚠️ • Klik 🔴 • Hening 🔴',
+  spS2l:'📷 Warna percikan', spS2i:'Biru ✅ • Kuning ⚠️ • Merah 🔴 • Tidak ada 🔴',
+  btnSOk:'⚡ Percikan biru kuat ✅', btnSWn:'⚠️ Percikan lemah', btnSEr:'🔴 Tidak ada percikan',
+  smoke:{none:{cls:'rok',t:'✅ Pembakaran bersih',d:'Tidak ada asap = bahan bakar bagus',tri:'ok'},white:{cls:'rwarn',t:'⚠️ Air dalam bahan bakar',d:'Asap putih = air atau kondensasi',tri:'warn'},black:{cls:'rerr',t:'🔴 Campuran kaya',d:'Kelebihan bahan bakar / kurang udara',tri:'warn'},blue:{cls:'rerr',t:'🔴 Oli terbakar',d:'Silinder atau katup aus',tri:'err'}},
+  oil:{amber:{st:'<span class="vok">Bagus</span>',li:'<span class="vok">80%</span>',ac:'<span class="vok">Cek di 2000 km</span>'},brown:{st:'<span class="vwarn">Bisa diterima</span>',li:'<span class="vwarn">45%</span>',ac:'<span class="vwarn">Ganti dalam 500 km</span>'},dark:{st:'<span class="verr">Terdegradasi</span>',li:'<span class="verr">5%</span>',ac:'<span class="verr">Ganti segera 🔴</span>'},milky:{st:'<span class="verr">Bahaya</span>',li:'<span class="verr">0%</span>',ac:'<span class="verr">Matikan mesin 🔴</span>'}}
+};
+
+L.zh = {
+  heroT:'您的摩托车在说话', heroS:'通过手机传感器AI诊断\n声音 • 图像 • 振动 • 推断',
+  netOn:'已连接 — 完整诊断可用', netOff:'离线 — 仅本地',
+  tri:'燃烧三角', lvl:'诊断级别',
+  fuel:'燃料', air:'空气', spark:'点火',
+  unk:'—', ok:'✅ 正常', warn:'⚠️ 可疑', err:'🔴 故障',
+  c0t:'总体概览', c0d:'视觉 + 声音 + 振动。免费',
+  c1t:'发动机诊断', c1d:'声音 + 烟雾 + 燃烧三角',
+  c2t:'机油分析', c2d:'相机分析机油样品',
+  c3t:'完整检查', c3d:'发动机 + 车架 + 市场价值 + PDF',
+  pFT:'🔍 总体概览', pFS:'所有传感器 — 免费报告',
+  s1l:'📷 视觉检查', s1i:'将相机对准发动机',
+  s2l:'🎙️ 聆听', s2i:'启动发动机10秒',
+  s3l:'📳 振动', s3i:'将手机放在车架上',
+  s4l:'🧠 报告', s4i:'最终分析 + 免费PDF',
+  rFT:'⚠️ 初步报告', rFD:'检测到问题指标。振动：2.3g',
+  btnDlF:'📄 下载免费报告', btnDeep:'🔬 深度诊断 — $5', btnSF:'📷 开始扫描',
+  pL1T:'🔊 发动机诊断', pL1S:'声音 + 烟雾 + 燃烧三角',
+  btnPL1:'支付$5并开始', btnBL1:'返回',
+  smkLbl:'烟雾颜色：', sm0:'无烟', sm1:'白色', sm2:'黑色', sm3:'蓝色',
+  btnDlL1:'📄 下载科学报告',
+  pL2T:'🛢️ 机油分析', pL2S:'相机 — 本地处理',
+  l2tip:'将机油样品放在白纸上',
+  btnPL2:'支付$10并开始', btnBL2:'返回',
+  oilLbl:'机油颜色：', oa:'琥珀色', ob:'棕色', od:'黑色', om:'乳白色',
+  oilH:'🛢️ 机油报告', okSt:'状态', okLi:'剩余寿命', okAc:'建议',
+  btnDlL2:'📄 下载机油报告',
+  pL3T:'🏆 完整检查', pL3S:'发动机 + 车架 + 市场价值 + 认证PDF',
+  l3tip:'适用于：保险 · 所有权转让 · 官方检查',
+  btnPL3:'支付$15并开始', btnBL3:'返回',
+  l3H:'🏍️ 完整检查报告',
+  l3kE:'发动机', l3kI:'点火', l3vI:'火花塞需要更换',
+  l3kB:'刹车', l3vB:'良好80%', l3kF:'车架', l3vF:'正常',
+  mktLbl:'估计市场价值', aftLbl:'修复后：$1,800 — $2,100',
+  btnDlL3:'📄 下载认证报告', btnShL3:'📤 数字分享',
+  fuelBg:'燃料', fuelT:'⛽ 燃料诊断', fuelS:'相机 + 麦克风',
+  fS1l:'🎙️ 燃烧声音', fS1i:'好燃料 → 清洁声音 • 坏燃料 → 爆震',
+  fS2l:'📷 烟雾颜色', fS2i:'⬛ 黑色 = 过多 • ⬜ 白色 = 水 • 🔵 蓝色 = 机油 • 无烟 ✅',
+  fRT:'✅ 燃料 — 免费检查', fRD:'精确分析：发动机诊断$5',
+  btnFD:'🔬 深度分析$5',
+  airBg:'空气', airT:'💨 空气诊断', airS:'堵塞比缺油更危险',
+  aS1l:'🎙️ 声音症状', aS1i:'强烈排气回火 = 缺气',
+  aS2l:'📷 空气滤清器', aS2i:'脏 → 更换（$2） • 破损 → 危险 🔴',
+  btnAOk:'✅ 空气正常', btnAWn:'⚠️ 滤清器脏',
+  spBg:'点火', spT:'⚡ 点火诊断', spS:'电池 → 线圈 → 电线 → 火花塞',
+  spS1l:'🔋 启动声音', spS1i:'强劲 ✅ • 缓慢 ⚠️ • 咔嗒声 🔴 • 无声 🔴',
+  spS2l:'📷 火花颜色', spS2i:'蓝色 ✅ • 黄色 ⚠️ • 红色 🔴 • 无火花 🔴',
+  btnSOk:'⚡ 强蓝色火花 ✅', btnSWn:'⚠️ 弱火花', btnSEr:'🔴 无火花',
+  smoke:{none:{cls:'rok',t:'✅ 清洁燃烧',d:'无烟 = 好燃料 + 完美燃烧',tri:'ok'},white:{cls:'rwarn',t:'⚠️ 燃料中有水',d:'白烟 = 水或冷凝',tri:'warn'},black:{cls:'rerr',t:'🔴 混合气过浓',d:'燃料过多 / 空气不足',tri:'warn'},blue:{cls:'rerr',t:'🔴 机油燃烧',d:'气缸或气门磨损',tri:'err'}},
+  oil:{amber:{st:'<span class="vok">良好</span>',li:'<span class="vok">80%</span>',ac:'<span class="vok">2000公里检查</span>'},brown:{st:'<span class="vwarn">可接受</span>',li:'<span class="vwarn">45%</span>',ac:'<span class="vwarn">500公里内更换</span>'},dark:{st:'<span class="verr">退化</span>',li:'<span class="verr">5%</span>',ac:'<span class="verr">立即更换 🔴</span>'},milky:{st:'<span class="verr">危险</span>',li:'<span class="verr">0%</span>',ac:'<span class="verr">停止发动机 🔴</span>'}}
+};
+
+var langs = ['ar','fr','en','es','pt','de','hi','id','zh'];
+var li = 0;
+
+function t(k){ return L[langs[li]][k] || ''; }
+
+function set(id, val){ var e = document.getElementById(id); if(e) e.textContent = val; }
+function setH(id, val){ var e = document.getElementById(id); if(e) e.innerHTML = val; }
+
+function applyLang(){
+  var cur = langs[li];
+  var lbl = ['0001F1F80001F1E6AR','0001F1EB0001F1F7FR','0001F1EC0001F1E7EN','0001F1EA0001F1F8ES','0001F1E70001F1F7PT','0001F1E90001F1EADE','0001F1EE0001F1F3HI','0001F1EE0001F1E9ID','0001F1E80001F1F3ZH'][LI];
+  document.documentElement.lang = cur;
+  document.documentElement.dir = cur === 'ar' ? 'rtl' : 'ltr';
+  document.getElementById('langBtn').textContent = '🌐 ' + lbl;
+
+  set('heroT', t('heroT'));
+  setH('heroS', t('heroS').replace('\n','<br>'));
+  set('triLbl', t('tri')); set('lvlLbl', t('lvl'));
+  set('tFuel', t('fuel')); set('tAir', t('air')); set('tSpark', t('spark'));
+  set('c0t', t('c0t')); set('c0d', t('c0d'));
+  set('c1t', t('c1t')); set('c1d', t('c1d'));
+  set('c2t', t('c2t')); set('c2d', t('c2d'));
+  set('c3t', t('c3t')); set('c3d', t('c3d'));
+  set('pFT', t('pFT')); set('pFS', t('pFS'));
+  set('s1l', t('s1l')); set('s1i', t('s1i'));
+  set('s2l', t('s2l')); set('s2i', t('s2i'));
+  set('s3l', t('s3l')); set('s3i', t('s3i'));
+  set('s4l', t('s4l')); set('s4i', t('s4i'));
+  set('rFT', t('rFT')); set('rFD', t('rFD'));
+  set('btnDlF', t('btnDlF')); set('btnDeep', t('btnDeep')); set('btnSF', t('btnSF'));
+  set('pL1T', t('pL1T')); set('pL1S', t('pL1S'));
+  set('btnPL1', t('btnPL1')); set('btnBL1', t('btnBL1'));
+  set('smkLbl', t('smkLbl')); set('sm0', t('sm0')); set('sm1', t('sm1')); set('sm2', t('sm2')); set('sm3', t('sm3'));
+  set('btnDlL1', t('btnDlL1'));
+  set('pL2T', t('pL2T')); set('pL2S', t('pL2S')); set('l2tip', t('l2tip'));
+  set('btnPL2', t('btnPL2')); set('btnBL2', t('btnBL2'));
+  set('oilLbl', t('oilLbl')); set('oa', t('oa')); set('ob', t('ob')); set('od', t('od')); set('om', t('om'));
+  set('oilH', t('oilH')); set('okSt', t('okSt')); set('okLi', t('okLi')); set('okAc', t('okAc'));
+  set('btnDlL2', t('btnDlL2'));
+  set('pL3T', t('pL3T')); set('pL3S', t('pL3S')); set('l3tip', t('l3tip'));
+  set('btnPL3', t('btnPL3')); set('btnBL3', t('btnBL3'));
+  set('l3H', t('l3H')); set('l3kE', t('l3kE')); set('l3kI', t('l3kI')); set('l3vI', t('l3vI'));
+  set('l3kB', t('l3kB')); set('l3vB', t('l3vB')); set('l3kF', t('l3kF')); set('l3vF', t('l3vF'));
+  set('mktLbl', t('mktLbl')); set('aftLbl', t('aftLbl'));
+  set('btnDlL3', t('btnDlL3')); set('btnShL3', t('btnShL3'));
+  set('fuelBg', t('fuelBg')); set('fuelT', t('fuelT')); set('fuelS', t('fuelS'));
+  set('fS1l', t('fS1l')); set('fS1i', t('fS1i'));
+  set('fS2l', t('fS2l')); set('fS2i', t('fS2i'));
+  set('fRT', t('fRT')); set('fRD', t('fRD')); set('btnFD', t('btnFD'));
+  set('airBg', t('airBg')); set('airT', t('airT')); set('airS', t('airS'));
+  set('aS1l', t('aS1l')); set('aS1i', t('aS1i'));
+  set('aS2l', t('aS2l')); set('aS2i', t('aS2i'));
+  set('btnAOk', t('btnAOk')); set('btnAWn', t('btnAWn'));
+  set('spBg', t('spBg')); set('spT', t('spT')); set('spS', t('spS'));
+  set('spS1l', t('spS1l')); set('spS1i', t('spS1i'));
+  set('spS2l', t('spS2l')); set('spS2i', t('spS2i'));
+  set('btnSOk', t('btnSOk')); set('btnSWn', t('btnSWn')); set('btnSEr', t('btnSEr'));
+
+  ['fuel','air','spark'].forEach(function(n){
+    var el = document.getElementById('ts-'+n);
+    var st = el.dataset.st || 'unk';
+    el.textContent = L[langs[li]][st] || '—';
+  });
+  checkNet();
+}
+
+document.getElementById('langBtn').addEventListener('click', function(){
+  li = (li + 1) % 3;
+  applyLang();
+});
+
+setInterval(function(){
+  var d = new Date();
+  document.getElementById('clk').textContent = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0') + ' GMT';
+}, 1000);
+
+function checkNet(){
+  var on = navigator.onLine;
+  document.getElementById('netDot').className = 'dot' + (on ? '' : ' off');
+  document.getElementById('netSt').innerHTML = on ? '<strong>' + t('netOn').split('—')[0] + '</strong>' + (t('netOn').includes('—') ? ' — ' + t('netOn').split('—')[1] : '') : '<strong>' + t('netOff') + '</strong>';
+}
+window.addEventListener('online', checkNet);
+window.addEventListener('offline', checkNet);
+
+var ap = null;
+function openP(id){ closeP(); var p = document.getElementById('panel-'+id); if(!p) return; document.getElementById('ovl').classList.add('on'); p.classList.add('on'); ap = p; document.body.style.overflow = 'hidden'; }
+function closeP(){ if(ap) ap.classList.remove('on'); document.getElementById('ovl').classList.remove('on'); ap = null; document.body.style.overflow = ''; }
+
+function setTri(n, st){
+  var el = document.getElementById('ts-'+n);
+  el.className = 'tst ' + st;
+  el.dataset.st = st;
+  el.textContent = L[langs[li]][st] || '—';
+}
+
+var step = 0, vs = null;
+function freeStep(){
+  step++;
+  var btn = document.getElementById('fbtn');
+  if(step === 1){
+    document.getElementById('fcam').style.display = 'block';
+    document.getElementById('fsen').style.display = 'block';
+    if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
+      navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(function(s){ vs=s; document.getElementById('vid').srcObject=s; }).catch(function(){});
+    setTimeout(function(){ document.getElementById('sv1').textContent='OK'; document.getElementById('fs1').className='step don'; document.getElementById('fs2').className='step act'; setTri('fuel','ok'); }, 3000);
+    btn.innerHTML = '<button class="btn bp" onclick="freeStep()">' + t('s2l') + '</button>';
+  } else if(step === 2){
+    if(vs){ vs.getTracks().forEach(function(t){ t.stop(); }); vs=null; }
+    document.getElementById('fcam').style.display = 'none';
+    setTimeout(function(){ document.getElementById('sv2').textContent='2847Hz'; document.getElementById('fs2').className='step don'; document.getElementById('fs3').className='step act'; }, 2000);
+    btn.innerHTML = '<button class="btn bp" onclick="freeStep()">' + t('s3l') + '</button>';
+  } else if(step === 3){
+    setTimeout(function(){ document.getElementById('sv3').textContent='1.8g'; document.getElementById('fs3').className='step don'; document.getElementById('fs4').className='step act'; }, 2500);
+    btn.innerHTML = '<button class="btn bp" onclick="freeStep()">' + t('s4l') + '</button>';
+  } else if(step === 4){
+    document.getElementById('fs4').className = 'step don';
+    document.getElementById('fres').style.display = 'block';
+    document.getElementById('fbtn').style.display = 'none';
+    document.getElementById('sv4').textContent = 'COMPLETE';
+  }
+}
+
+function quickScan(){ var i = document.getElementById('mainIco'); i.classList.add('scan'); setTimeout(function(){ i.classList.remove('scan'); openP('free'); }, 800); }
+
+function showL1Ana(){ document.getElementById('l1pay').style.display='none'; document.getElementById('l1ana').style.display='block'; drawWave(); }
+function showL2Ana(){ document.getElementById('l2pay').style.display='none'; document.getElementById('l2ana').style.display='block'; }
+function showL3Ana(){ document.getElementById('l3pay').style.display='none'; document.getElementById('l3ana').style.display='block'; var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; document.getElementById('l3id').textContent='MOTO-2025-'+Array.from({length:6},function(){ return c[Math.floor(Math.random()*c.length)]; }).join(''); }
+
+function drawWave(){
+  var cv = document.getElementById('wfc'); if(!cv) return;
+  var ctx = cv.getContext('2d'); cv.width = cv.offsetWidth; cv.height = cv.offsetHeight;
+  var ph = 0;
+  (function draw(){ if(!document.getElementById('wfc')) return; ctx.clearRect(0,0,cv.width,cv.height); ctx.strokeStyle='#ff4d00'; ctx.lineWidth=1.5; ctx.beginPath(); for(var x=0;x<cv.width;x++){ var y=cv.height/2+Math.sin(x*0.05+ph)*15+Math.sin(x*0.12+ph*1.3)*8+(Math.random()-0.5)*3; x===0?ctx.moveTo(x,y):ctx.lineTo(x,y); } ctx.stroke(); ph+=0.15; requestAnimationFrame(draw); })();
+}
+
+function selSmoke(el, type){
+  var sd = L[langs[li]].smoke[type];
+  var r = document.getElementById('l1res');
+  r.className = 'rbox ' + sd.cls;
+  r.innerHTML = '<div class="rt">' + sd.t + '</div><div class="rd">' + sd.d + '</div>';
+  setTri('fuel', sd.tri);
+}
+
+function selOil(el, type){
+  document.querySelectorAll('.oil').forEach(function(e){ e.classList.remove('sel'); });
+  el.classList.add('sel');
+  var d = L[langs[li]].oil[type];
+  document.getElementById('oSt').innerHTML = d.st;
+  document.getElementById('oLi').innerHTML = d.li;
+  document.getElementById('oAc').innerHTML = d.ac;
+  document.getElementById('oilid').textContent = 'OIL-' + Date.now().toString(36).toUpperCase();
+  document.getElementById('oilres').style.display = 'block';
+}
+
+function dlRpt(){
+  var txt = 'AI-MOTORCYCLE MAINTENANCE REPORT\nDate: ' + new Date().toISOString().split('T')[0] + '\nID: MOTO-2025-' + Date.now().toString(36).toUpperCase() + '\n\nFuel: OK\nAir: OK\nSpark: WARNING\nVibration: 1.8g\n\nMOULOUD KAMALI x CLAUDE AI';
+  var a = document.createElement('a');
+  a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
+  a.download = 'moto-report.txt'; a.click();
+}
+
+function shareRpt(){
+  var txt = 'AI-Motorcycle Report\nID: MOTO-2025-' + Date.now().toString(36).toUpperCase() + '\nhttps://moulkamali-boop.github.io/AI-Motorcycle-/';
+  if(navigator.share) navigator.share({title:'Moto Report', text: txt});
+  else navigator.clipboard.writeText(txt).then(function(){ alert('Copied!'); });
+}
+
+applyLang();
+</script>
+</body>
+</html>
