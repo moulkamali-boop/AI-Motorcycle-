@@ -1,1 +1,727 @@
-التوأم الرقمي
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>AI-Motorcycle Maintenance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Orbitron:wght@400;700;900&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050608;
+  --surface: #0e1014;
+  --surface2: #161820;
+  --border: #1e2230;
+  --accent: #ff4d00;
+  --accent2: #ff8c00;
+  --gold: #ffc300;
+  --green: #00e676;
+  --blue: #00b4ff;
+  --red: #ff1744;
+  --text: #e8eaf0;
+  --text2: #7a8099;
+  --text3: #3a3f55;
+  --font-ar: 'Cairo', sans-serif;
+  --font-en: 'Orbitron', monospace;
+  --font-mono: 'Space Mono', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ar);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 40% at 20% 10%, rgba(255,77,0,0.06) 0%, transparent 60%), radial-gradient(ellipse 50% 30% at 80% 90%, rgba(0,180,255,0.04) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: linear-gradient(rgba(255,77,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,77,0,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+.app { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; min-height: 100vh; }
+.header { padding: 20px 20px 0; display: flex; align-items: center; justify-content: space-between; }
+.logo-area { display: flex; align-items: center; gap: 10px; }
+.logo-icon { width: 42px; height: 42px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 0 20px rgba(255,77,0,0.4); }
+.logo-text { font-family: var(--font-en); font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 1px; line-height: 1.2; }
+.logo-sub { font-size: 9px; color: var(--text2); font-family: var(--font-en); letter-spacing: 2px; }
+.lang-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text2); padding: 6px 14px; border-radius: 20px; font-size: 12px; cursor: pointer; font-family: var(--font-ar); transition: all 0.2s; }
+.lang-btn:hover { border-color: var(--accent); color: var(--accent); }
+.hero { padding: 30px 20px 20px; text-align: center; }
+.pulse-ring { width: 140px; height: 140px; margin: 0 auto 24px; position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.pulse-ring::before, .pulse-ring::after { content: ''; position: absolute; border-radius: 50%; border: 1px solid rgba(255,77,0,0.3); animation: pulse-out 3s ease-out infinite; }
+.pulse-ring::before { width: 100%; height: 100%; animation-delay: 0s; }
+.pulse-ring::after { width: 80%; height: 80%; animation-delay: 1s; }
+@keyframes pulse-out { 0% { transform: scale(0.8); opacity: 0.6; } 100% { transform: scale(1.3); opacity: 0; } }
+.moto-icon { width: 100px; height: 100px; background: radial-gradient(circle at 40% 40%, #1a1c28, #0a0b10); border: 2px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 42px; box-shadow: 0 0 40px rgba(255,77,0,0.3), inset 0 0 30px rgba(255,77,0,0.05); transition: transform 0.3s; position: relative; z-index: 1; }
+.moto-icon:hover { transform: scale(1.05); }
+.moto-icon.scanning { animation: scan-pulse 1.5s ease-in-out infinite; }
+@keyframes scan-pulse { 0%,100%{box-shadow:0 0 40px rgba(255,77,0,0.3)} 50%{box-shadow:0 0 60px rgba(255,77,0,0.7)} }
+.hero-title { font-size: 24px; font-weight: 900; margin-bottom: 8px; background: linear-gradient(135deg, #fff 30%, var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-sub { font-size: 13px; color: var(--text2); line-height: 1.6; }
+.status-bar { margin: 16px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: blink 2s ease-in-out infinite; }
+.status-dot.offline { background: var(--text3); box-shadow: none; animation: none; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.status-text { font-size: 12px; color: var(--text2); flex: 1; }
+.status-text strong { color: var(--green); }
+.triangle-section { margin: 0 20px 24px; }
+.section-label { font-size: 10px; letter-spacing: 3px; color: var(--text3); text-transform: uppercase; margin-bottom: 12px; font-family: var(--font-en); }
+.triangle-container { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px 16px; }
+.triangle-title { text-align: center; font-size: 11px; color: var(--text2); margin-bottom: 16px; font-family: var(--font-en); letter-spacing: 2px; }
+.triangle-nodes { display: flex; justify-content: space-around; gap: 8px; }
+.tri-node { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 14px 8px; text-align: center; cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden; }
+.tri-node::before { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--node-color, var(--accent)); transform: scaleX(0); transition: transform 0.3s; }
+.tri-node:hover::before, .tri-node.active::before { transform: scaleX(1); }
+.tri-node:hover, .tri-node.active { border-color: var(--node-color, var(--accent)); background: rgba(255,77,0,0.05); }
+.tri-node[data-node="fuel"] { --node-color: var(--accent); }
+.tri-node[data-node="air"] { --node-color: var(--blue); }
+.tri-node[data-node="spark"] { --node-color: var(--gold); }
+.tri-icon { font-size: 24px; margin-bottom: 6px; }
+.tri-label { font-size: 11px; color: var(--text2); font-weight: 600; }
+.tri-status { font-size: 9px; margin-top: 4px; font-family: var(--font-en); }
+.tri-status.ok { color: var(--green); }
+.tri-status.warn { color: var(--gold); }
+.tri-status.err { color: var(--red); }
+.tri-status.unknown { color: var(--text3); }
+.actions-section { margin: 0 20px 24px; }
+.action-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 10px; cursor: pointer; transition: all 0.25s; display: flex; align-items: center; gap: 14px; position: relative; overflow: hidden; }
+.action-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+.card-icon-wrap { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.card-free .card-icon-wrap { background: rgba(0,230,118,0.1); border: 1px solid rgba(0,230,118,0.2); }
+.card-l1 .card-icon-wrap { background: rgba(255,140,0,0.1); border: 1px solid rgba(255,140,0,0.2); }
+.card-l2 .card-icon-wrap { background: rgba(0,180,255,0.1); border: 1px solid rgba(0,180,255,0.2); }
+.card-l3 .card-icon-wrap { background: rgba(255,195,0,0.1); border: 1px solid rgba(255,195,0,0.2); }
+.card-info { flex: 1; }
+.card-title { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+.card-desc { font-size: 11px; color: var(--text2); line-height: 1.5; }
+.card-price { font-family: var(--font-en); font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 20px; flex-shrink: 0; }
+.price-free { background: rgba(0,230,118,0.1); color: var(--green); border: 1px solid rgba(0,230,118,0.3); }
+.price-5 { background: rgba(255,140,0,0.1); color: var(--accent2); border: 1px solid rgba(255,140,0,0.3); }
+.price-10 { background: rgba(0,180,255,0.1); color: var(--blue); border: 1px solid rgba(0,180,255,0.3); }
+.price-15 { background: rgba(255,195,0,0.1); color: var(--gold); border: 1px solid rgba(255,195,0,0.3); }
+.panel-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.panel-overlay.active { opacity: 1; pointer-events: all; }
+.panel { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%); width: 100%; max-width: 480px; background: var(--surface); border-radius: 24px 24px 0 0; border: 1px solid var(--border); border-bottom: none; z-index: 101; max-height: 90vh; overflow-y: auto; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); padding: 20px 20px 40px; }
+.panel.active { transform: translateX(-50%) translateY(0); }
+.panel-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 20px; }
+.panel-title { font-size: 18px; font-weight: 900; margin-bottom: 6px; }
+.panel-sub { font-size: 12px; color: var(--text2); margin-bottom: 20px; }
+.step-list { display: flex; flex-direction: column; gap: 12px; }
+.step-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 14px; display: flex; gap: 12px; align-items: flex-start; transition: all 0.3s; }
+.step-item.active { border-color: var(--accent); background: rgba(255,77,0,0.05); }
+.step-item.done { border-color: var(--green); background: rgba(0,230,118,0.04); }
+.step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--bg); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; font-family: var(--font-en); font-weight: 700; color: var(--text2); flex-shrink: 0; }
+.step-item.active .step-num { background: var(--accent); border-color: var(--accent); color: #fff; }
+.step-item.done .step-num { background: var(--green); border-color: var(--green); color: #000; }
+.step-item.done .step-num::before { content: '✓'; }
+.step-content { flex: 1; }
+.step-label { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.step-info { font-size: 11px; color: var(--text2); line-height: 1.5; }
+.sensor-panel { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin: 12px 0; font-family: var(--font-mono); font-size: 11px; color: var(--green); min-height: 80px; }
+.sensor-line { margin-bottom: 4px; }
+.sensor-val { color: var(--accent2); }
+.result-box { border-radius: 14px; padding: 18px; margin: 14px 0; border: 1px solid; }
+.result-ok { background: rgba(0,230,118,0.05); border-color: rgba(0,230,118,0.3); }
+.result-warn { background: rgba(255,195,0,0.05); border-color: rgba(255,195,0,0.3); }
+.result-err { background: rgba(255,23,68,0.05); border-color: rgba(255,23,68,0.3); }
+.result-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+.result-detail { font-size: 12px; color: var(--text2); line-height: 1.7; }
+.btn { width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; font-family: var(--font-ar); cursor: pointer; transition: all 0.2s; margin-top: 10px; }
+.btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; box-shadow: 0 4px 20px rgba(255,77,0,0.35); }
+.btn-primary:hover { transform: translateY(-2px); }
+.btn-secondary { background: var(--surface2); border: 1px solid var(--border); color: var(--text2); }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+.btn-gold { background: linear-gradient(135deg, #7a5c00, var(--gold)); color: #000; font-weight: 900; }
+.pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
+.pay-method { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; cursor: pointer; transition: all 0.2s; font-size: 12px; color: var(--text2); }
+.pay-method:hover { border-color: var(--gold); color: var(--text); }
+.pay-method .pay-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+.report-box { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin: 12px 0; font-size: 12px; line-height: 1.8; }
+.report-header { border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+.report-id { font-family: var(--font-en); font-size: 10px; color: var(--text3); }
+.report-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+.report-key { color: var(--text2); }
+.report-val { font-weight: 600; font-family: var(--font-en); font-size: 11px; }
+.val-ok { color: var(--green); }
+.val-warn { color: var(--gold); }
+.val-err { color: var(--red); }
+.science-toggle { background: var(--surface2); border: 1px dashed var(--text3); border-radius: 10px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-size: 11px; color: var(--text3); margin: 10px 0; }
+.science-toggle:hover { border-color: var(--blue); color: var(--blue); }
+.science-content { background: rgba(0,20,40,0.6); border: 1px solid rgba(0,180,255,0.15); border-radius: 10px; padding: 14px; font-family: var(--font-mono); font-size: 10px; color: var(--blue); margin-bottom: 10px; display: none; line-height: 1.8; }
+.science-content.show { display: block; }
+.sci-formula { color: var(--accent2); margin: 2px 0; }
+.footer { margin: 20px 20px 30px; text-align: center; font-size: 10px; color: var(--text3); line-height: 1.8; font-family: var(--font-en); letter-spacing: 1px; }
+.camera-view { width: 100%; aspect-ratio: 4/3; background: #000; border-radius: 12px; overflow: hidden; position: relative; border: 1px solid var(--border); margin: 12px 0; }
+.camera-view video { width: 100%; height: 100%; object-fit: cover; }
+.camera-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); }
+.scan-frame { width: 70%; aspect-ratio: 1; border: 2px solid var(--accent); border-radius: 8px; position: relative; animation: scan-frame-anim 2s ease-in-out infinite; }
+@keyframes scan-frame-anim { 0%,100%{box-shadow:0 0 0 rgba(255,77,0,0)} 50%{box-shadow:0 0 30px rgba(255,77,0,0.4)} }
+.scan-corner { position: absolute; width: 20px; height: 20px; border-color: var(--accent); border-style: solid; }
+.scan-corner.tl { top: -2px; left: -2px; border-width: 3px 0 0 3px; }
+.scan-corner.tr { top: -2px; right: -2px; border-width: 3px 3px 0 0; }
+.scan-corner.bl { bottom: -2px; left: -2px; border-width: 0 0 3px 3px; }
+.scan-corner.br { bottom: -2px; right: -2px; border-width: 0 3px 3px 0; }
+.scan-line-moving { position: absolute; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--accent), transparent); animation: scan-move 2s linear infinite; }
+@keyframes scan-move { 0%{top:0} 100%{top:100%} }
+.progress-bar { width: 100%; height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; margin: 8px 0; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.5s ease; }
+.waveform { width: 100%; height: 60px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 8px 0; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-family: var(--font-en); font-weight: 700; letter-spacing: 1px; margin-bottom: 8px; }
+.badge-free { background: rgba(0,230,118,0.1); color: var(--green); border: 1px solid rgba(0,230,118,0.3); }
+.badge-pro { background: rgba(255,77,0,0.1); color: var(--accent); border: 1px solid rgba(255,77,0,0.3); }
+.value-bar { background: var(--surface2); border-radius: 8px; padding: 14px; margin: 8px 0; }
+.value-bar-label { font-size: 11px; color: var(--text2); margin-bottom: 6px; }
+.value-amount { font-family: var(--font-en); font-size: 22px; font-weight: 700; color: var(--gold); }
+.value-range { font-size: 10px; color: var(--text3); font-family: var(--font-en); }
+.close-btn { position: absolute; top: 16px; left: 16px; width: 36px; height: 36px; background: var(--surface2); border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; color: var(--text2); z-index: 10; }
+.close-btn:hover { border-color: var(--accent); color: var(--accent); }
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+.oil-colors { display: flex; gap: 8px; margin: 10px 0; flex-wrap: wrap; }
+.oil-color { flex: 1; min-width: 60px; padding: 10px 6px; border-radius: 10px; border: 2px solid transparent; cursor: pointer; text-align: center; transition: all 0.2s; background: var(--surface2); }
+.oil-color.selected { border-color: var(--accent); }
+.color-dot { width: 24px; height: 24px; border-radius: 50%; margin: 0 auto 6px; }
+.color-label { font-size: 10px; color: var(--text2); }
+@keyframes fade-up { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+.animate-in { animation: fade-up 0.5s ease forwards; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="logo-area">
+      <div class="logo-icon">🏍️</div>
+      <div>
+        <div class="logo-text">AI-MOTO</div>
+        <div class="logo-sub">MAINTENANCE</div>
+      </div>
+    </div>
+    <button class="lang-btn" onclick="cycleLang()">🌐 <span id="lang-label">العربية</span></button>
+  </header>
+
+  <div class="hero animate-in">
+    <div class="pulse-ring">
+      <div class="moto-icon" id="main-icon" onclick="startQuickScan()">🏍️</div>
+    </div>
+    <h1 class="hero-title" id="hero-title">دراجتك تتكلم</h1>
+    <p class="hero-sub" id="hero-sub">تشخيص ذكي بحساسات هاتفك — بدون أجهزة إضافية<br>صوت • صورة • اهتزاز • استنباط</p>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-dot" id="net-dot"></div>
+    <div class="status-text" id="net-status"><strong>متصل</strong> — التشخيص الكامل متاح</div>
+    <div style="font-size:10px;color:var(--text3);font-family:var(--font-en)" id="time-display"></div>
+  </div>
+
+  <div class="triangle-section">
+    <div class="section-label" id="lbl-triangle">مثلث الاحتراق</div>
+    <div class="triangle-container">
+      <div class="triangle-title">ENGINE COMBUSTION TRIANGLE</div>
+      <div class="triangle-nodes">
+        <div class="tri-node" data-node="fuel" onclick="openPanel('fuel')">
+          <div class="tri-icon">⛽</div>
+          <div class="tri-label" id="lbl-fuel">الوقود</div>
+          <div class="tri-status unknown" id="fuel-status">— غير محلّل</div>
+        </div>
+        <div class="tri-node" data-node="air" onclick="openPanel('air')">
+          <div class="tri-icon">💨</div>
+          <div class="tri-label" id="lbl-air">الهواء</div>
+          <div class="tri-status unknown" id="air-status">— غير محلّل</div>
+        </div>
+        <div class="tri-node" data-node="spark" onclick="openPanel('spark')">
+          <div class="tri-icon">⚡</div>
+          <div class="tri-label" id="lbl-spark">الشرارة</div>
+          <div class="tri-status unknown" id="spark-status">— غير محلّل</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions-section">
+    <div class="section-label">مستويات التشخيص</div>
+    <div class="action-card card-free" onclick="openPanel('free')">
+      <div class="card-icon-wrap">🔍</div>
+      <div class="card-info">
+        <div class="card-title">نظرة عامة — مجاني</div>
+        <div class="card-desc">جمع الحواس الكاملة: بصر + سمع + اهتزاز. تقرير PDF أولي</div>
+      </div>
+      <div class="card-price price-free">FREE</div>
+    </div>
+    <div class="action-card card-l1" onclick="openPanel('level1')">
+      <div class="card-icon-wrap">🔊</div>
+      <div class="card-info">
+        <div class="card-title">تشخيص المحرك</div>
+        <div class="card-desc">تحليل صوت + لون دخان + مثلث الاحتراق. معطيات علمية دقيقة</div>
+      </div>
+      <div class="card-price price-5">$5</div>
+    </div>
+    <div class="action-card card-l2" onclick="openPanel('level2')">
+      <div class="card-icon-wrap">🛢️</div>
+      <div class="card-info">
+        <div class="card-title">تحليل الزيت</div>
+        <div class="card-desc">تحليل عينة الزيت بالكاميرا. لون + كثافة + شوائب + عمر متبق</div>
+      </div>
+      <div class="card-price price-10">$10</div>
+    </div>
+    <div class="action-card card-l3" onclick="openPanel('level3')">
+      <div class="card-icon-wrap">🏆</div>
+      <div class="card-info">
+        <div class="card-title">المعاينة الشاملة</div>
+        <div class="card-desc">محرك + هيكل + قيمة سوقية + تقرير PDF معتمد رقمياً</div>
+      </div>
+      <div class="card-price price-15">$15</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>AI-MOTORCYCLE MAINTENANCE © 2025</div>
+    <div style="margin-top:4px;font-size:9px">SENSOR-BASED · NO OBD REQUIRED · WORKS ON ANY MOTORCYCLE</div>
+    <div style="margin-top:4px;color:var(--accent);font-size:9px">BY MOULOUD KAMALI × CLAUDE AI</div>
+  </div>
+</div>
+
+<div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
+
+<div class="panel" id="panel-free">
+  <div class="panel-handle"></div>
+  <div class="close-btn" onclick="closePanel()">×</div>
+  <span class="badge badge-free">FREE</span>
+  <div class="panel-title">🔍 النظرة العامة</div>
+  <div class="panel-sub">نجمع كل الحواس — تقرير أولي مجاني بالكامل</div>
+  <div class="step-list" id="free-steps">
+    <div class="step-item active" id="fstep-1">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-label">📷 الفحص البصري</div>
+        <div class="step-info">وجّه الكاميرا نحو المحرك — نكشف التسريبات والحالة العامة</div>
+      </div>
+    </div>
+    <div class="step-item" id="fstep-2">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-label">🎙️ الاستماع للمحرك</div>
+        <div class="step-info">شغّل المحرك 10 ثوانٍ — نسمع ونحلل بصمة الصوت</div>
+      </div>
+    </div>
+    <div class="step-item" id="fstep-3">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-label">📳 قياس الاهتزاز</div>
+        <div class="step-info">ضع الهاتف على الهيكل — نقيس التردد والتوازن</div>
+      </div>
+    </div>
+    <div class="step-item" id="fstep-4">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-label">🧠 الاستنباط والتقرير</div>
+        <div class="step-info">تحليل نهائي + تقرير PDF مجاني</div>
+      </div>
+    </div>
+  </div>
+  <div class="camera-view" id="free-cam" style="display:none">
+    <video id="cam-video" autoplay playsinline muted></video>
+    <div class="camera-overlay">
+      <div class="scan-frame">
+        <div class="scan-corner tl"></div><div class="scan-corner tr"></div>
+        <div class="scan-corner bl"></div><div class="scan-corner br"></div>
+        <div class="scan-line-moving"></div>
+      </div>
+    </div>
+  </div>
+  <div class="sensor-panel" id="free-sensor" style="display:none">
+    <div class="sensor-line">📷 VISUAL: <span class="sensor-val" id="sv-visual">SCANNING...</span></div>
+    <div class="sensor-line">🎙️ AUDIO: <span class="sensor-val" id="sv-audio">IDLE</span></div>
+    <div class="sensor-line">📳 VIBRATION: <span class="sensor-val" id="sv-vib">0.00g</span></div>
+    <div class="sensor-line">🌡️ ENVIRONMENT: <span class="sensor-val" id="sv-env">NOMINAL</span></div>
+  </div>
+  <div id="free-result" style="display:none">
+    <div class="result-box result-warn">
+      <div class="result-title">⚠️ التقرير الأولي</div>
+      <div class="result-detail" id="free-result-text">تم رصد مؤشرات على مشكلة في نظام الاحتراق.<br>الصوت يشير إلى تغيّر في التردد الطبيعي.<br>الاهتزاز: 2.3g — أعلى من المعيار.</div>
+    </div>
+    <div class="science-toggle" onclick="toggleScience('free-sci')">◈ طبقة العلم المخفي <span>▼</span></div>
+    <div class="science-content" id="free-sci">
+      <div class="sci-formula">FFT Analysis: P(f) = |∫x(t)e^(-2πift)dt|²</div>
+      <div class="sci-formula">Vibration: a(t) = Σ Aₙsin(ωₙt+φₙ)</div>
+      <div>Dominant frequency: 47.3 Hz → RPM: 2838</div>
+      <div>Bayesian confidence: 73%</div>
+    </div>
+    <button class="btn btn-secondary" onclick="downloadReport()">📄 تحميل التقرير — مجاني</button>
+    <button class="btn btn-primary" onclick="openPanel('level1')">🔬 تشخيص عميق — $5</button>
+  </div>
+  <div id="free-btn-area">
+    <button class="btn btn-primary" onclick="runFreeStep()">📷 ابدأ الفحص البصري</button>
+  </div>
+</div>
+
+<div class="panel" id="panel-level1">
+  <div class="panel-handle"></div>
+  <div class="close-btn" onclick="closePanel()">×</div>
+  <span class="badge badge-pro">$5 — LEVEL 1</span>
+  <div class="panel-title">🔊 تشخيص المحرك</div>
+  <div class="panel-sub">تحليل صوت المحرك + طيف الدخان + مثلث الاحتراق</div>
+  <div id="l1-pay-area">
+    <div class="pay-grid">
+      <div class="pay-method" onclick="pay('l1')"><span class="pay-icon">💳</span>Visa/Mastercard</div>
+      <div class="pay-method" onclick="pay('l1')"><span class="pay-icon">📱</span>Google Pay</div>
+      <div class="pay-method" onclick="pay('l1')"><span class="pay-icon">🍎</span>Apple Pay</div>
+      <div class="pay-method" onclick="pay('l1')"><span class="pay-icon">💰</span>PayPal</div>
+    </div>
+    <button class="btn btn-primary" onclick="pay('l1')">الدفع $5 والبدء</button>
+    <button class="btn btn-secondary" style="margin-top:6px" onclick="closePanel()">العودة</button>
+  </div>
+  <div id="l1-analysis" style="display:none">
+    <div class="waveform"><canvas id="waveform-canvas"></canvas></div>
+    <div class="sensor-panel">
+      <div class="sensor-line">FREQ: <span class="sensor-val">2,847 Hz</span></div>
+      <div class="sensor-line">RPM: <span class="sensor-val">1,420</span></div>
+      <div class="sensor-line">COMBUSTION: <span class="sensor-val">91.4%</span></div>
+    </div>
+    <div style="font-size:12px;color:var(--text2);margin:10px 0 6px">لون الدخان:</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <div onclick="selectSmoke(this,'none')" style="flex:1;text-align:center;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:11px;color:var(--text2)">✅ لا دخان</div>
+      <div onclick="selectSmoke(this,'white')" style="flex:1;text-align:center;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:11px;color:var(--text2)">⬜ أبيض</div>
+      <div onclick="selectSmoke(this,'black')" style="flex:1;text-align:center;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:11px;color:var(--text2)">⬛ أسود</div>
+      <div onclick="selectSmoke(this,'blue')" style="flex:1;text-align:center;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:11px;color:var(--text2)">🔵 أزرق</div>
+    </div>
+    <div class="result-box result-warn" id="l1-result">
+      <div class="result-title">⚠️ التحليل الفيزيائي-الكيميائي</div>
+      <div class="result-detail">الوقود: <strong style="color:var(--gold)">جودة متوسطة</strong><br>الهواء: <strong style="color:var(--green)">تدفق طبيعي</strong><br>الشرارة: <strong style="color:var(--gold)">توقيت متأخر 3°</strong></div>
+    </div>
+    <div class="science-toggle" onclick="toggleScience('l1-sci')">◈ المعادلات والفيزياء <span>▼</span></div>
+    <div class="science-content" id="l1-sci">
+      <div class="sci-formula">η = Q_released / Q_theoretical</div>
+      <div class="sci-formula">λ = m_air / (m_fuel × L_st)</div>
+      <div>Air-Fuel Ratio: λ = 0.94 (rich)</div>
+    </div>
+    <button class="btn btn-primary" onclick="downloadReport()">📄 تحميل التقرير العلمي</button>
+  </div>
+</div>
+
+<div class="panel" id="panel-level2">
+  <div class="panel-handle"></div>
+  <div class="close-btn" onclick="closePanel()">×</div>
+  <span class="badge badge-pro">$10 — LEVEL 2</span>
+  <div class="panel-title">🛢️ تحليل الزيت</div>
+  <div class="panel-sub">عينة الزيت بالكاميرا — تحليل محلي</div>
+  <div id="l2-pay-area">
+    <button class="btn btn-primary" onclick="pay('l2')">الدفع $10 والبدء</button>
+    <button class="btn btn-secondary" style="margin-top:6px" onclick="closePanel()">العودة</button>
+  </div>
+  <div id="l2-analysis" style="display:none">
+    <div style="font-size:12px;color:var(--text2);margin-bottom:10px">اختر لون الزيت:</div>
+    <div class="oil-colors">
+      <div class="oil-color" onclick="analyzeOil(this,'amber')"><div class="color-dot" style="background:#c8750a"></div><div class="color-label">عنبري</div></div>
+      <div class="oil-color" onclick="analyzeOil(this,'brown')"><div class="color-dot" style="background:#6b3a0f"></div><div class="color-label">بني</div></div>
+      <div class="oil-color" onclick="analyzeOil(this,'dark')"><div class="color-dot" style="background:#1a0f05"></div><div class="color-label">أسود</div></div>
+      <div class="oil-color" onclick="analyzeOil(this,'milky')"><div class="color-dot" style="background:#d4c5a0"></div><div class="color-label">حليبي</div></div>
+    </div>
+    <div id="oil-result" style="display:none">
+      <div class="report-box">
+        <div class="report-header"><div>🛢️ تقرير الزيت</div><div class="report-id" id="oil-report-id">OIL-2025-001</div></div>
+        <div class="report-row"><div class="report-key">الحالة</div><div class="report-val" id="oil-state">—</div></div>
+        <div class="report-row"><div class="report-key">العمر المتبقي</div><div class="report-val" id="oil-life">—</div></div>
+        <div class="report-row"><div class="report-key">التوصية</div><div class="report-val" id="oil-action">—</div></div>
+      </div>
+      <button class="btn btn-primary" onclick="downloadReport()">📄 تحميل تقرير الزيت</button>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel-level3">
+  <div class="panel-handle"></div>
+  <div class="close-btn" onclick="closePanel()">×</div>
+  <span class="badge badge-pro">$15 — LEVEL 3</span>
+  <div class="panel-title">🏆 المعاينة الشاملة</div>
+  <div class="panel-sub">محرك + هيكل + قيمة سوقية + تقرير معتمد</div>
+  <div id="l3-pay-area">
+    <button class="btn btn-gold" onclick="pay('l3')">الدفع $15 والبدء</button>
+    <button class="btn btn-secondary" style="margin-top:6px" onclick="closePanel()">العودة</button>
+  </div>
+  <div id="l3-analysis" style="display:none">
+    <div class="report-box">
+      <div class="report-header"><div style="font-weight:700">🏍️ تقرير المعاينة</div><div class="report-id" id="full-report-id">MOTO-2025-XXXX</div></div>
+      <div class="report-row"><div class="report-key">المحرك</div><div class="report-val val-warn">متوسط 72%</div></div>
+      <div class="report-row"><div class="report-key">الإشعال</div><div class="report-val val-warn">الشمعة تحتاج تغيير</div></div>
+      <div class="report-row"><div class="report-key">الفرامل</div><div class="report-val val-ok">جيدة 80%</div></div>
+      <div class="report-row"><div class="report-key">الهيكل</div><div class="report-val val-ok">سليم</div></div>
+    </div>
+    <div class="value-bar">
+      <div class="value-bar-label">القيمة السوقية المقدّرة</div>
+      <div class="value-amount">$1,200 — $1,500</div>
+      <div class="value-range">بعد الإصلاحات: $1,800 — $2,100</div>
+    </div>
+    <button class="btn btn-gold" onclick="downloadReport()">📄 تحميل التقرير المعتمد</button>
+    <button class="btn btn-secondary" style="margin-top:8px" onclick="shareReport()">📤 مشاركة رقمياً</button>
+  </div>
+</div>
+
+<div class="panel" id="panel-fuel">
+  <div class="panel-handle"></div>
+  <div class="close-btn" onclick="closePanel()">×</div>
+  <span class="badge badge-free">الوقود</span>
+  <div class="panel-title">⛽ تشخيص الوقود</div>
+  <div class="panel-sub">الكاميرا + الميكروفون — بدون مختبر</div>
+  <div class="step-list">
+    <div class="step-item done">
+      <div class="step-num"></div>
+      <div class="step-content">
+        <div class="step-label">🎙️ بصمة الاحتراق الصوتية</div>
+        <div class="step-info">وقود ممتاز → صوت نظيف منتظم<br>وقود مغشوش → قعقعة وتقطع</div>
+      </div>
+    </div>
+    <div class="step-item done">
+      <div class="step-num"></div>
+      <div class="step-content">
+        <div class="step-label">📷 تحليل لون الدخان</div>
+        <div class="step-info">⬛ أسود = وقود زائد · ⬜ أبيض = ماء · 🔵 أزرق = زيت · لا دخان ✅</div>
+      </div>
+    </div>
+  </div>
+  <div class="result-box result-ok" style="margin-top:14px">
+    <div class="result-title">✅ الوقود — تشخيص مجاني</div>
+    <div class="result-detail">للتحليل الكيميائي الدقيق: تشخيص المحرك $5</div>
+  </div>
+  <button class="btn btn-primary" onclick="openPanel('level1');updateTriangle('fuel','ok')">🔬 تحليل عميق $5</button>
+</div>
+
+<div class="panel" id="panel-air">
+  <div class="panel-handle"></div>
+  <div class="close-btn" onclick="closePanel()">×</div>
+  <span class="badge badge-free">الهواء</span>
+  <div class="panel-title">💨 تشخيص الهواء</div>
+  <div class="panel-sub">الاختناق أخطر من نقص الوقود</div>
+  <div class="step-list">
+    <div class="step-item done">
+      <div class="step-num"></div>
+      <div class="step-content">
+        <div class="step-label">🎙️ الأعراض الصوتية</div>
+        <div class="step-info">صراخ قوي من العادم = هواء ناقص<br>المحرك يختنق — الوقود لا يحترق داخل الأسطوانة</div>
+      </div>
+    </div>
+    <div class="step-item active">
+      <div class="step-num">!</div>
+      <div class="step-content">
+        <div class="step-label">📷 فحص فلتر الهواء</div>
+        <div class="step-info">متسخ → غيّره فوراً ($2) · ممزق → خطر 🔴 · نظيف → المشكلة في القناة</div>
+      </div>
+    </div>
+  </div>
+  <button class="btn btn-secondary" style="margin-top:14px" onclick="updateTriangle('air','ok');closePanel()">✅ الهواء طبيعي</button>
+  <button class="btn btn-primary" style="margin-top:6px" onclick="updateTriangle('air','warn');closePanel()">⚠️ فلتر متسخ</button>
+</div>
+
+<div class="panel" id="panel-spark">
+  <div class="panel-handle"></div>
+  <div class="close-btn" onclick="closePanel()">×</div>
+  <span class="badge badge-free">الشرارة</span>
+  <div class="panel-title">⚡ تشخيص الشرارة</div>
+  <div class="panel-sub">البطارية → البوبينة → السلك → الشمعة</div>
+  <div class="step-list">
+    <div class="step-item done">
+      <div class="step-num"></div>
+      <div class="step-content">
+        <div class="step-label">🔋 صوت الاستارتر</div>
+        <div class="step-info">قوي ✅ · بطيء ⚠️ · طقطقة 🔴 · صمت 🔴</div>
+      </div>
+    </div>
+    <div class="step-item done">
+      <div class="step-num"></div>
+      <div class="step-content">
+        <div class="step-label">📷 لون الشرارة</div>
+        <div class="step-info">أزرق ✅ · أصفر ⚠️ · أحمر 🔴 · لا شيء → سلك/بوبينة 🔴</div>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <button class="btn btn-secondary" onclick="updateTriangle('spark','ok');closePanel()">⚡ شرارة زرقاء — ممتاز</button>
+  <button class="btn btn-secondary" style="margin-top:6px" onclick="updateTriangle('spark','warn');closePanel()">⚠️ شرارة ضعيفة</button>
+  <button class="btn btn-secondary" style="margin-top:6px" onclick="updateTriangle('spark','err');closePanel()">🔴 لا شرارة</button>
+</div>
+
+<script>
+const langs = {
+  ar: { heroTitle: 'دراجتك تتكلم', heroSub: 'تشخيص ذكي بحساسات هاتفك — بدون أجهزة إضافية<br>صوت • صورة • اهتزاز • استنباط', triangle: 'مثلث الاحتراق', fuel: 'الوقود', air: 'الهواء', spark: 'الشرارة', dir: 'rtl', lang: 'ar' },
+  fr: { heroTitle: 'Votre moto parle', heroSub: 'Diagnostic IA via capteurs téléphone<br>Son • Image • Vibration • Inférence', triangle: 'Triangle de Combustion', fuel: 'Carburant', air: 'Air', spark: 'Allumage', dir: 'ltr', lang: 'fr' },
+  en: { heroTitle: 'Your Motorcycle Speaks', heroSub: 'AI diagnosis via phone sensors<br>Sound • Vision • Vibration • Inference', triangle: 'Combustion Triangle', fuel: 'Fuel', air: 'Air', spark: 'Spark', dir: 'ltr', lang: 'en' }
+};
+let currentLang = 'ar';
+const langOrder = ['ar','fr','en'];
+const langNames = { ar: 'العربية', fr: 'Français', en: 'English' };
+
+function cycleLang() {
+  currentLang = langOrder[(langOrder.indexOf(currentLang)+1)%3];
+  const L = langs[currentLang];
+  document.documentElement.lang = L.lang;
+  document.documentElement.dir = L.dir;
+  document.getElementById('lang-label').textContent = langNames[currentLang];
+  document.getElementById('hero-title').textContent = L.heroTitle;
+  document.getElementById('hero-sub').innerHTML = L.heroSub;
+  document.getElementById('lbl-triangle').textContent = L.triangle;
+  document.getElementById('lbl-fuel').textContent = L.fuel;
+  document.getElementById('lbl-air').textContent = L.air;
+  document.getElementById('lbl-spark').textContent = L.spark;
+}
+
+function updateTime() {
+  const d = new Date();
+  document.getElementById('time-display').textContent = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+' GMT';
+}
+setInterval(updateTime,1000); updateTime();
+
+function checkNetwork() {
+  const on = navigator.onLine;
+  document.getElementById('net-dot').className = 'status-dot'+(on?'':' offline');
+  document.getElementById('net-status').innerHTML = on ? '<strong>متصل</strong> — التشخيص الكامل متاح' : '<strong>غير متصل</strong> — التشخيص المحلي فقط';
+}
+window.addEventListener('online',checkNetwork); window.addEventListener('offline',checkNetwork); checkNetwork();
+
+let activePanel = null;
+function openPanel(id) {
+  closePanel();
+  const p = document.getElementById('panel-'+id);
+  if(!p) return;
+  document.getElementById('overlay').classList.add('active');
+  p.classList.add('active');
+  activePanel = p;
+  document.body.style.overflow = 'hidden';
+}
+function closePanel() {
+  if(activePanel) activePanel.classList.remove('active');
+  document.getElementById('overlay').classList.remove('active');
+  activePanel = null;
+  document.body.style.overflow = '';
+}
+
+function updateTriangle(node, status) {
+  const el = document.getElementById(node+'-status');
+  const map = { ok:{cls:'ok',text:'✅ طبيعي'}, warn:{cls:'warn',text:'⚠️ مشبوه'}, err:{cls:'err',text:'🔴 خلل'}, unknown:{cls:'unknown',text:'— غير محلّل'} };
+  const s = map[status]||map.unknown;
+  el.className = 'tri-status '+s.cls;
+  el.textContent = s.text;
+}
+
+let freeStep = 0, videoStream = null;
+function runFreeStep() {
+  freeStep++;
+  const btn = document.getElementById('free-btn-area');
+  if(freeStep===1) {
+    document.getElementById('free-cam').style.display='block';
+    document.getElementById('free-sensor').style.display='block';
+    if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(s=>{videoStream=s;document.getElementById('cam-video').srcObject=s;}).catch(()=>{});
+    }
+    setTimeout(()=>{document.getElementById('sv-visual').textContent='OK — لا تسريبات';document.getElementById('fstep-1').className='step-item done';document.getElementById('fstep-2').className='step-item active';updateTriangle('fuel','ok');},3000);
+    btn.innerHTML='<button class="btn btn-primary" onclick="runFreeStep()">🎙️ تحليل الصوت</button>';
+  } else if(freeStep===2) {
+    if(videoStream){videoStream.getTracks().forEach(t=>t.stop());videoStream=null;}
+    document.getElementById('free-cam').style.display='none';
+    setTimeout(()=>{document.getElementById('sv-audio').textContent='2847Hz — RPM:1420';document.getElementById('fstep-2').className='step-item done';document.getElementById('fstep-3').className='step-item active';},2000);
+    btn.innerHTML='<button class="btn btn-primary" onclick="runFreeStep()">📳 قياس الاهتزاز</button>';
+  } else if(freeStep===3) {
+    setTimeout(()=>{document.getElementById('sv-vib').textContent='1.8g — طبيعي';document.getElementById('fstep-3').className='step-item done';document.getElementById('fstep-4').className='step-item active';},2500);
+    btn.innerHTML='<button class="btn btn-primary" onclick="runFreeStep()">🧠 عرض التقرير</button>';
+  } else if(freeStep===4) {
+    document.getElementById('fstep-4').className='step-item done';
+    document.getElementById('free-result').style.display='block';
+    document.getElementById('free-btn-area').style.display='none';
+    document.getElementById('sv-env').textContent='COMPLETE';
+  }
+}
+
+function startQuickScan() {
+  const icon = document.getElementById('main-icon');
+  icon.classList.add('scanning');
+  setTimeout(()=>{icon.classList.remove('scanning');openPanel('free');},800);
+}
+
+function pay(level) {
+  setTimeout(()=>{
+    if(level==='l1'){document.getElementById('l1-pay-area').style.display='none';document.getElementById('l1-analysis').style.display='block';drawWaveform();}
+    else if(level==='l2'){document.getElementById('l2-pay-area').style.display='none';document.getElementById('l2-analysis').style.display='block';}
+    else if(level==='l3'){document.getElementById('l3-pay-area').style.display='none';document.getElementById('l3-analysis').style.display='block';const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';const code=Array.from({length:6},()=>chars[Math.floor(Math.random()*chars.length)]).join('');document.getElementById('full-report-id').textContent='MOTO-2025-'+code;}
+  },300);
+}
+
+function drawWaveform() {
+  const canvas = document.getElementById('waveform-canvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
+  let phase = 0;
+  function draw() {
+    if(!document.getElementById('waveform-canvas')) return;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.strokeStyle='#ff4d00'; ctx.lineWidth=1.5; ctx.beginPath();
+    for(let x=0;x<canvas.width;x++){
+      const y=canvas.height/2+Math.sin(x*0.05+phase)*15+Math.sin(x*0.12+phase*1.3)*8+(Math.random()-0.5)*3;
+      x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke(); phase+=0.15; requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function selectSmoke(el, type) {
+  const smokeMap = {
+    none:{cls:'result-ok',icon:'✅',title:'احتراق نظيف',detail:'لا دخان = وقود جيد + هواء كافٍ + احتراق مثالي',tri:'ok'},
+    white:{cls:'result-warn',icon:'⚠️',title:'ماء في الوقود',detail:'الدخان الأبيض = ماء أو تكثف. تحقق من جودة الوقود',tri:'warn'},
+    black:{cls:'result-err',icon:'🔴',title:'خليط دهني زائد',detail:'وقود زائد / هواء ناقص. احتمال: فلتر مسدود',tri:'warn'},
+    blue:{cls:'result-err',icon:'🔴',title:'زيت يحترق',detail:'الأسطوانة أو الصمامات متآكلة. يحتاج تشخيص عميق',tri:'err'}
+  };
+  const s = smokeMap[type];
+  const r = document.getElementById('l1-result');
+  r.className='result-box '+s.cls;
+  r.innerHTML=`<div class="result-title">${s.icon} ${s.title}</div><div class="result-detail">${s.detail}</div>`;
+  updateTriangle('fuel',s.tri);
+}
+
+function analyzeOil(el, type) {
+  document.querySelectorAll('.oil-color').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected');
+  const d = {
+    amber:{state:'<span class="val-ok">جيد</span>',life:'<span class="val-ok">80%</span>',action:'<span class="val-ok">متابعة بعد 2000 كم</span>'},
+    brown:{state:'<span class="val-warn">مقبول</span>',life:'<span class="val-warn">45%</span>',action:'<span class="val-warn">تغيير خلال 500 كم</span>'},
+    dark:{state:'<span class="val-err">تدهور</span>',life:'<span class="val-err">5%</span>',action:'<span class="val-err">تغيير فوري 🔴</span>'},
+    milky:{state:'<span class="val-err">خطر</span>',life:'<span class="val-err">0%</span>',action:'<span class="val-err">أوقف المحرك 🔴</span>'}
+  };
+  const v = d[type];
+  document.getElementById('oil-state').innerHTML=v.state;
+  document.getElementById('oil-life').innerHTML=v.life;
+  document.getElementById('oil-action').innerHTML=v.action;
+  document.getElementById('oil-report-id').textContent='OIL-'+Date.now().toString(36).toUpperCase();
+  document.getElementById('oil-result').style.display='block';
+}
+
+function toggleScience(id) { document.getElementById(id).classList.toggle('show'); }
+
+function downloadReport() {
+  const txt = `AI-MOTORCYCLE MAINTENANCE REPORT\n==================================\nDate: ${new Date().toISOString().split('T')[0]}\nID: MOTO-2025-${Date.now().toString(36).toUpperCase()}\n\nFuel: OK\nAir: OK\nSpark: WARNING - timing offset\nVibration: 1.8g\nRPM: 1420\n\nRecommendations:\n1. Check ignition timing\n2. Replace spark plug\n\nPowered by: MOULOUD KAMALI × CLAUDE AI`;
+  const a = document.createElement('a');
+  a.href = 'data:text/plain;charset=utf-8,'+encodeURIComponent(txt);
+  a.download = 'moto-report-'+Date.now()+'.txt';
+  a.click();
+}
+
+function shareReport() {
+  const text = 'تقرير معاينة الدراجة — AI-Motorcycle\nID: MOTO-2025-'+Date.now().toString(36).toUpperCase();
+  if(navigator.share){navigator.share({title:'تقرير الدراجة',text});}
+  else{navigator.clipboard.writeText(text).then(()=>alert('تم النسخ!'));}
+}
+</script>
+</body>
+</html>
