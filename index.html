@@ -1143,6 +1143,41 @@ function applyRevLang(){
   updateAvg();
 }
 
+
+// ===== ADMIN MODE =====
+var adminClicks = 0;
+var adminMode = false;
+
+document.querySelector('.logo-ico').addEventListener('click', function(){
+  adminClicks++;
+  if(adminClicks >= 5){
+    adminClicks = 0;
+    var pwd = prompt('🔑');
+    if(pwd === 'Mouloud123'){
+      adminMode = true;
+      document.querySelectorAll('.acard').forEach(function(el){
+        el.style.display = 'flex';
+      });
+      // Replace Patreon button with direct open
+      var subCard = document.querySelector('.acard:not(.cf)');
+      if(subCard){
+        subCard.onclick = function(){ openP('l1'); };
+        var price = subCard.querySelector('.cprice');
+        if(price){ price.textContent = '✅ ADMIN'; price.style.background='rgba(0,230,118,0.2)'; price.style.color='var(--gn)'; price.style.border='1px solid rgba(0,230,118,0.4)'; price.style.fontSize='10px'; }
+      }
+      // Show all panels freely
+      document.getElementById('panel-l1').querySelector('#l1pay').style.display='none';
+      document.getElementById('panel-l1').querySelector('#l1ana').style.display='block';
+      document.getElementById('panel-l2').querySelector('#l2pay').style.display='none';
+      document.getElementById('panel-l2').querySelector('#l2ana').style.display='block';
+      document.getElementById('panel-l3').querySelector('#l3pay').style.display='none';
+      document.getElementById('panel-l3').querySelector('#l3ana').style.display='block';
+      drawWave();
+      alert('✅ Mode Admin activé');
+    }
+  }
+});
+
 // INIT
 applyLang();
 applyRevLang();
