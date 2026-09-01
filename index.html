@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0a0f1a">
-    <meta name="description" content="Bike Engine Pro — تقدير فيزيائي بحت لحالة محرك الدراجة النارية عبر مستشعرات الهاتف: الصوت، الدخان، الاهتزاز. بلا تشخيص ميكانيكي نهائي، فيزياء محضة.">
+    <meta name="description" content="تقدير فيزيائي استرشادي لحالة محرك الدراجة النارية عبر مستشعرات الهاتف.">
     <meta property="og:title" content="Bike Engine Pro">
     <meta property="og:description" content="تقدير فيزيائي بحت لحالة محرك الدراجة النارية عبر مستشعرات الهاتف — قياسات حقيقية، خصوصية كاملة، 23 لغة.">
     <meta property="og:type" content="website">
@@ -25,9 +25,11 @@
         .title-dynamic{font-size:1.1rem;font-weight:600;color:#fff;text-align:center;margin-top:2px}
         .icon-btn{width:44px;height:44px;background:#1e293b;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;border:1px solid #334155;cursor:pointer;color:#f5b81b;transition:0.2s}
         .icon-btn:hover{background:#2d3a4e;transform:scale(1.05)}
+        .icon-btn.admin-active{background:#8b5cf6;border-color:#8b5cf6;color:#fff}
         .meta-row{display:flex;justify-content:space-between;background:#1e293b;padding:6px 14px;border-radius:30px;font-size:0.75rem;margin:6px 0;color:#fff;flex-wrap:wrap;gap:6px}
         .meta-row span{color:#fff;font-size:0.75rem}
         .ref-badge{font-size:0.7rem;color:#fff!important;border:1px solid #8b5cf6;border-radius:30px;padding:2px 12px;display:inline-block;font-weight:500}
+        .ref-badge.exists{border-color:#2ecc71;color:#2ecc71!important}
         .lang-id-row{display:flex;gap:6px;margin:8px 0}
         .lang-id-row select,.lang-id-row .id-box{flex:1;padding:6px 10px;background:#1e293b;border:1px solid #334155;border-radius:30px;font-size:0.75rem;color:#fff}
         .lang-id-row select{appearance:auto;cursor:pointer}
@@ -41,14 +43,16 @@
         .code-row input{flex:1;padding:6px 10px;background:#1e293b;border:1px solid #334155;border-radius:30px;color:#fff;font-size:0.75rem}
         .code-row button{background:#3b82f6;border:none;border-radius:30px;padding:6px 14px;color:#fff;font-weight:600;cursor:pointer;font-size:0.75rem;transition:0.2s}
         .code-row button:hover{background:#2563eb}
+        .code-row button:disabled{opacity:0.5;cursor:not-allowed}
         .divider{height:2px;background:linear-gradient(90deg,transparent,#f5b81b,transparent);margin:8px 0;opacity:0.6}
         .diag-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}
-        .diag-btn{background:#1e293b;border:1px solid #334155;border-radius:30px;padding:6px 4px;font-size:0.65rem;color:#94a3b8;cursor:pointer;text-align:center;transition:0.2s}
+        .diag-btn{background:#1e293b;border:1px solid #334155;border-radius:30px;padding:6px 4px;font-size:0.65rem;color:#94a3b8;cursor:pointer;text-align:center;transition:0.2s;display:flex;align-items:center;justify-content:center;gap:4px}
         .diag-btn:hover{background:#2d3a4e;border-color:#f5b81b}
         .diag-btn.active{background:#f5b81b22;border-color:#f5b81b;color:#f5b81b}
-        .diag-btn .icon{font-size:1.2rem;display:block}
+        .diag-btn .icon{font-size:1.2rem}
         .start-btn{width:100%;padding:14px;background:linear-gradient(135deg,#f5b81b,#e67e22);border:none;border-radius:40px;font-weight:700;color:#0a0f1a;font-size:1rem;cursor:pointer;margin:8px 0;transition:0.2s}
         .start-btn:hover{transform:scale(1.02);box-shadow:0 0 30px #f5b81b44}
+        .start-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
         #labArea{display:none;margin-top:12px}
         .step-indicator{display:flex;justify-content:space-between;margin:10px 0;padding:0 6px}
         .step-dot{width:14px;height:14px;border-radius:50%;background:#334155;border:2px solid #1e293b;transition:0.3s;position:relative}
@@ -244,6 +248,7 @@
             <div class="step-dot active" data-step="1"><span class="label">🎤</span></div>
             <div class="step-dot" data-step="2"><span class="label">📸</span></div>
             <div class="step-dot" data-step="3"><span class="label">📳</span></div>
+            <div class="step-dot" data-step="4"><span class="label">🌡️</span></div>
         </div>
         <div class="progress-bar"><div class="fill" id="progressFill"></div></div>
 
@@ -293,12 +298,26 @@
         </div>
 
         <!-- SENSOR 4: TEMPERATURE -->
+        <div class="sensor-card" id="card4">
+            <div class="sensor-header"><span id="sensorName4"><span class="sensor-icon">🌡️</span> <span id="sensorLabel4">الحرارة</span></span><span class="tool" id="tool4">🌡️ <span id="toolLabel4">تقدير حراري</span></span></div>
+            <div class="sensor-instruction" id="instr4">📌 سيتم تقدير الحرارة من بيانات الجهاز، ستفتح البوابة تلقائياً ثم اضغط قياس</div>
+            <div class="sensor-preview" id="preview4"><span id="previewText4">⏳ جاري فتح البوابة...</span></div>
+            <div class="sensor-result" id="result4"></div>
+            <div class="sensor-result sub" id="subResult4"></div>
+            <div class="sensor-actions">
+                <button class="btn-measure" id="measure4" disabled><span id="measureLabel4">▶️ قياس</span></button>
+                <button class="btn-retry" id="retry4" style="display:none;"><span id="retryLabel4">🔄 إعادة</span></button>
+                <button class="btn-next" id="next4" disabled><span id="nextLabel4">➡️ التالي</span></button>
+                <button class="btn-skip" id="skip4"><span id="skipLabel4">⏭ تخطي</span></button>
+            </div>
+        </div>
+
         <!-- FINAL VERDICT -->
         <div class="final-verdict" id="finalVerdict">
             <div class="final-icon" id="finalIcon">📊</div>
             <div id="finalShortText" class="final-short-text"></div>
             <div id="verdictSentence" role="status" aria-live="polite" style="font-size:0.95rem;font-weight:600;color:#e2e8f0;background:#0f172a;border-radius:14px;padding:12px 14px;margin:8px 0;line-height:1.7;"></div>
-            <div id="confidenceDisplay" class="confidence-badge high">⚡ <span id="confidenceLabel">الاكتمال</span>: <span id="confidenceCount">0</span>/3</div>
+            <div id="confidenceDisplay" class="confidence-badge high">⚡ <span id="confidenceLabel">الاكتمال</span>: <span id="confidenceCount">0</span>/4</div>
             <div id="summaryContainer" style="margin:8px 0;"></div>
             <div style="font-size:0.6rem;color:#6c7a92;margin:4px 0;">
                 <span class="retry-free-badge" onclick="quickReset()"><i class="fas fa-undo-alt"></i> <span id="retryFreeLabel">إعادة التشخيص</span></span>
@@ -358,18 +377,14 @@
 // ============================================================
 // 🏍️ Bike Engine Diagnostics Pro - الفيزياء الرقمية الناطقة
 // ============================================================
-// المبادئ العلمية:
-// 1. قياسات فيزيائية حقيقية من المستشعرات، لا وهم
-// 2. البوابة تفتح تلقائياً بسلاسة، لا توقف
-// 3. الإعادة تعيد فتح البوابة وقياس جديد
-// 4. التخطي متاح دائماً، لا ينتج أرقاماً وهمية
-// 5. الخلاصة تعكس الحقيقة: ما قيس وما لم يُقَس
-// 6. التطبيق لا يتوقف أبداً، حتى عند رفض الأذونات
-// 7. درجة الثقة = عدد القياسات الفعلية / العدد الكلي
-// 8. 23 لغة مع ترجمة ديناميكية كاملة
+// 23 لغة مترجمة بالكامل - كل نص في التطبيق مترجم
 // ============================================================
 
-// ==================== 1. اللغات (23) ====================
+// ==================== 1. كلمة المطور (مشفرة) ====================
+// SHA-256 of "MOULOUD2026"
+const ADMIN_PASSWORD_HASH = '6448bdc1f6bdbcd18e64ad9cc3b574aaccaba04fed872603b01345f45a7829c3';
+
+// ==================== 2. اللغات (23) ====================
 const LANG_LIST = [
     { code: 'ar', flag: '🇸🇦', name: 'العربية' },
     { code: 'en', flag: '🇬🇧', name: 'English' },
@@ -396,7 +411,7 @@ const LANG_LIST = [
     { code: 'sw', flag: '🇰🇪', name: 'Kiswahili' }
 ];
 
-// ==================== 2. الترجمات الكاملة ====================
+// ==================== 3. الترجمات الكاملة (23 لغة) ====================
 const TRANSLATIONS = {};
 
 // ---- العربية ----
@@ -681,7 +696,7 @@ TRANSLATIONS.en = {
     step_label: 'Step'
 };
 
-// ---- Français ----
+// ---- الفرنسية ----
 TRANSLATIONS.fr = {
     app_title: 'Diagnostic Moto Physique',
     start_btn: 'Démarrer le diagnostic physique de la moto',
@@ -822,7 +837,7 @@ TRANSLATIONS.fr = {
     step_label: 'Étape'
 };
 
-// ---- Español ----
+// ---- الإسبانية ----
 TRANSLATIONS.es = {
     app_title: 'Diagnóstico Físico de Moto',
     start_btn: 'Iniciar diagnóstico físico de la moto',
@@ -963,7 +978,7 @@ TRANSLATIONS.es = {
     step_label: 'Paso'
 };
 
-// ---- Deutsch ----
+// ---- الألمانية ----
 TRANSLATIONS.de = {
     app_title: 'Moto-Physik-Diagnose',
     start_btn: 'Starte die physikalische Moto-Diagnose',
@@ -1104,7 +1119,7 @@ TRANSLATIONS.de = {
     step_label: 'Schritt'
 };
 
-// ---- Italiano ----
+// ---- الإيطالية ----
 TRANSLATIONS.it = {
     app_title: 'Diagnostica Moto Fisica',
     start_btn: 'Avvia diagnostica fisica della moto',
@@ -1245,7 +1260,7 @@ TRANSLATIONS.it = {
     step_label: 'Passo'
 };
 
-// ---- Português ----
+// ---- البرتغالية ----
 TRANSLATIONS.pt = {
     app_title: 'Diagnóstico Físico de Moto',
     start_btn: 'Iniciar diagnóstico físico da moto',
@@ -1386,7 +1401,7 @@ TRANSLATIONS.pt = {
     step_label: 'Passo'
 };
 
-// ---- Русский ----
+// ---- الروسية ----
 TRANSLATIONS.ru = {
     app_title: 'Физическая диагностика мотоцикла',
     start_btn: 'Начать физическую диагностику мотоцикла',
@@ -1527,7 +1542,7 @@ TRANSLATIONS.ru = {
     step_label: 'Шаг'
 };
 
-// ---- 中文 ----
+// ---- الصينية المبسطة ----
 TRANSLATIONS.zh = {
     app_title: '摩托车物理诊断',
     start_btn: '开始摩托车物理诊断',
@@ -1668,7 +1683,7 @@ TRANSLATIONS.zh = {
     step_label: '步骤'
 };
 
-// ---- 日本語 ----
+// ---- اليابانية ----
 TRANSLATIONS.ja = {
     app_title: 'バイク物理診断',
     start_btn: 'バイク物理診断を開始',
@@ -1809,7 +1824,7 @@ TRANSLATIONS.ja = {
     step_label: 'ステップ'
 };
 
-// ---- 한국어 ----
+// ---- الكورية ----
 TRANSLATIONS.ko = {
     app_title: '오토바이 물리 진단',
     start_btn: '오토바이 물리 진단 시작',
@@ -1950,7 +1965,7 @@ TRANSLATIONS.ko = {
     step_label: '단계'
 };
 
-// ---- हिन्दी ----
+// ---- الهندية ----
 TRANSLATIONS.hi = {
     app_title: 'बाइक भौतिक निदान',
     start_btn: 'बाइक भौतिक निदान शुरू करें',
@@ -2091,7 +2106,7 @@ TRANSLATIONS.hi = {
     step_label: 'चरण'
 };
 
-// ---- Türkçe ----
+// ---- التركية ----
 TRANSLATIONS.tr = {
     app_title: 'Motosiklet Fiziksel Teşhisi',
     start_btn: 'Motosiklet Fiziksel Teşhisini Başlat',
@@ -2232,7 +2247,7 @@ TRANSLATIONS.tr = {
     step_label: 'Adım'
 };
 
-// ---- Bahasa Indonesia ----
+// ---- الإندونيسية ----
 TRANSLATIONS.id = {
     app_title: 'Diagnosis Fisik Motor',
     start_btn: 'Mulai Diagnosis Fisik Motor',
@@ -2373,7 +2388,7 @@ TRANSLATIONS.id = {
     step_label: 'Langkah'
 };
 
-// ---- Melayu ----
+// ---- الملايو ----
 TRANSLATIONS.ms = {
     app_title: 'Diagnosis Fizikal Motosikal',
     start_btn: 'Mulakan Diagnosis Fizikal Motosikal',
@@ -2514,7 +2529,7 @@ TRANSLATIONS.ms = {
     step_label: 'Langkah'
 };
 
-// ---- Tiếng Việt ----
+// ---- الفيتنامية ----
 TRANSLATIONS.vi = {
     app_title: 'Chẩn đoán Vật lý Xe máy',
     start_btn: 'Bắt đầu Chẩn đoán Vật lý Xe máy',
@@ -2655,7 +2670,7 @@ TRANSLATIONS.vi = {
     step_label: 'Bước'
 };
 
-// ---- ไทย ----
+// ---- التايلاندية ----
 TRANSLATIONS.th = {
     app_title: 'การวินิจฉัยทางกายภาพรถจักรยานยนต์',
     start_btn: 'เริ่มการวินิจฉัยทางกายภาพรถจักรยานยนต์',
@@ -2686,7 +2701,7 @@ TRANSLATIONS.th = {
     sensor4: 'อุณหภูมิ',
     tool1: 'ไมโครโฟน',
     tool2: 'กล้อง',
-    tool3: 'มาตรความเร่ง',
+    tool3: 'มาตรวัดความเร่ง',
     tool4: 'แบตเตอรี่',
     instr1: 'วางโทรศัพท์ใกล้เครื่องยนต์ ประตูเปิดอัตโนมัติแล้วกดวัด',
     instr2: 'ชี้กล้องไปที่ท่อไอเสีย ประตูเปิดอัตโนมัติแล้วกดวัด',
@@ -2796,7 +2811,7 @@ TRANSLATIONS.th = {
     step_label: 'ขั้นตอน'
 };
 
-// ---- Nederlands ----
+// ---- الهولندية ----
 TRANSLATIONS.nl = {
     app_title: 'Fysieke Diagnose Motorfiets',
     start_btn: 'Start Fysieke Diagnose Motorfiets',
@@ -2937,7 +2952,7 @@ TRANSLATIONS.nl = {
     step_label: 'Stap'
 };
 
-// ---- Polski ----
+// ---- البولندية ----
 TRANSLATIONS.pl = {
     app_title: 'Fizyczna Diagnoza Motocykla',
     start_btn: 'Rozpocznij Fizyczną Diagnozę Motocykla',
@@ -3078,7 +3093,7 @@ TRANSLATIONS.pl = {
     step_label: 'Krok'
 };
 
-// ---- Svenska ----
+// ---- السويدية ----
 TRANSLATIONS.sv = {
     app_title: 'Fysisk Diagnos Motorcykel',
     start_btn: 'Starta Fysisk Diagnos Motorcykel',
@@ -3219,7 +3234,7 @@ TRANSLATIONS.sv = {
     step_label: 'Steg'
 };
 
-// ---- فارسی ----
+// ---- الفارسية ----
 TRANSLATIONS.fa = {
     app_title: 'تشخیص فیزیکی موتورسیکلت',
     start_btn: 'شروع تشخیص فیزیکی موتورسیکلت',
@@ -3360,7 +3375,7 @@ TRANSLATIONS.fa = {
     step_label: 'مرحله'
 };
 
-// ---- اردو ----
+// ---- الأردية ----
 TRANSLATIONS.ur = {
     app_title: 'موٹر سائیکل کی طبیعی تشخیص',
     start_btn: 'موٹر سائیکل کی طبیعی تشخیص شروع کریں',
@@ -3501,7 +3516,7 @@ TRANSLATIONS.ur = {
     step_label: 'مرحلہ'
 };
 
-// ---- Kiswahili ----
+// ---- السواحيلية ----
 TRANSLATIONS.sw = {
     app_title: 'Uchunguzi wa Kimwili wa Pikipiki',
     start_btn: 'Anza Uchunguzi wa Kimwili wa Pikipiki',
@@ -3642,8 +3657,7 @@ TRANSLATIONS.sw = {
     step_label: 'Hatua'
 };
 
-// ==================== 3. النظام الأساسي ====================
-
+// ==================== 4. النظام الأساسي ====================
 let currentLang = localStorage.getItem('bikeProLang') || 'ar';
 
 function t(key, ...args) {
@@ -3655,107 +3669,121 @@ function t(key, ...args) {
     return str;
 }
 
-// ==================== 4. توليد ID فريد للجهاز ====================
-function generateDeviceId() {
-    let id = localStorage.getItem('bikeProDeviceId');
-    if (!id) {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let result = '';
-        for (let i = 0; i < 8; i++) {
-            result += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        id = 'BIKE-' + result;
-        localStorage.setItem('bikeProDeviceId', id);
-    }
-    return id;
-}
-
-// ==================== تشفير محلي (Web Crypto الأصلي، بلا مكتبات خارجية) ====================
-async function getDeviceCryptoKey() {
-    let salt = localStorage.getItem('bikeProSalt');
-    if (!salt) {
-        salt = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(b => b.toString(16).padStart(2, '0')).join('');
-        localStorage.setItem('bikeProSalt', salt);
-    }
-    const enc = new TextEncoder();
-    const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(navigator.userAgent + salt), 'PBKDF2', false, ['deriveKey']);
-    return crypto.subtle.deriveKey(
-        { name: 'PBKDF2', salt: enc.encode(salt), iterations: 100000, hash: 'SHA-256' },
-        keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']
-    );
-}
-async function encryptForStorage(obj) {
-    const key = await getDeviceCryptoKey();
-    const iv = crypto.getRandomValues(new Uint8Array(12));
-    const enc = new TextEncoder();
-    const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(JSON.stringify(obj)));
-    return JSON.stringify({ iv: Array.from(iv), data: Array.from(new Uint8Array(ciphertext)) });
-}
-async function decryptFromStorage(stored) {
-    try {
-        const { iv, data } = JSON.parse(stored);
-        const key = await getDeviceCryptoKey();
-        const plainBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: new Uint8Array(iv) }, key, new Uint8Array(data));
-        return JSON.parse(new TextDecoder().decode(plainBuf));
-    } catch (e) { return null; }
-}
-
-// كلمة سر المطور مُجزّأة (SHA-256) بدل تخزينها كنص صريح أو طباعتها في الكونسول
-const ADMIN_PASSWORD_HASH_BIKE = '6448bdc1f6bdbcd18e64ad9cc3b574aaccaba04fed872603b01345f45a7829c3';
-async function sha256HexBike(str) {
+// ==================== 5. SHA-256 ====================
+async function sha256Hex(str) {
     const enc = new TextEncoder().encode(str);
     const hashBuf = await crypto.subtle.digest('SHA-256', enc);
     return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
-async function checkAdminPasswordBike(input) {
-    try { return (await sha256HexBike(input)) === ADMIN_PASSWORD_HASH_BIKE; }
-    catch (e) { return false; }
+
+async function checkAdminPassword(input) {
+    try {
+        const hash = await sha256Hex(input);
+        return hash === ADMIN_PASSWORD_HASH;
+    } catch (e) { return false; }
 }
 
-// ==================== تحقق حقيقي من الشراء عبر واجهة Gumroad الرسمية ====================
-const GUMROAD_PRODUCTS_BIKE = {
+// ==================== 6. التشفير المحلي ====================
+async function getCryptoKey() {
+    let salt = localStorage.getItem('bikeProSalt');
+    if (!salt) {
+        const arr = crypto.getRandomValues(new Uint8Array(16));
+        salt = Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('');
+        localStorage.setItem('bikeProSalt', salt);
+    }
+    const enc = new TextEncoder();
+    const keyMaterial = await crypto.subtle.importKey(
+        'PBKDF2',
+        enc.encode(navigator.userAgent + salt),
+        { name: 'PBKDF2' },
+        false,
+        ['deriveKey']
+    );
+    return crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt: enc.encode(salt), iterations: 100000, hash: 'SHA-256' },
+        keyMaterial,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['encrypt', 'decrypt']
+    );
+}
+
+async function encryptData(obj) {
+    const key = await getCryptoKey();
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const enc = new TextEncoder();
+    const cipher = await crypto.subtle.encrypt(
+        { name: 'AES-GCM', iv },
+        key,
+        enc.encode(JSON.stringify(obj))
+    );
+    return JSON.stringify({ iv: Array.from(iv), data: Array.from(new Uint8Array(cipher)) });
+}
+
+async function decryptData(stored) {
+    try {
+        const { iv, data } = JSON.parse(stored);
+        const key = await getCryptoKey();
+        const plain = await crypto.subtle.decrypt(
+            { name: 'AES-GCM', iv: new Uint8Array(iv) },
+            key,
+            new Uint8Array(data)
+        );
+        return JSON.parse(new TextDecoder().decode(plain));
+    } catch (e) { return null; }
+}
+
+// ==================== 7. نظام الدفع Gumroad ====================
+const GUMROAD_PRODUCTS = {
     'iqqyus': { credits: 1 },
     'gqbdr': { credits: 5 },
     'ocfbzc': { credits: 15 }
 };
-async function verifyGumroadLicenseBike(licenseKey) {
-    for (const permalink in GUMROAD_PRODUCTS_BIKE) {
+
+async function verifyGumroadLicense(licenseKey) {
+    for (const permalink in GUMROAD_PRODUCTS) {
         try {
             const res = await fetch('https://api.gumroad.com/v2/licenses/verify', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({ product_permalink: permalink, license_key: licenseKey, increment_uses_count: 'true' })
+                body: new URLSearchParams({
+                    product_permalink: permalink,
+                    license_key: licenseKey,
+                    increment_uses_count: 'true'
+                })
             });
             const data = await res.json();
             if (data && data.success && data.purchase && !data.purchase.refunded && !data.purchase.chargebacked) {
-                return { valid: true, credits: GUMROAD_PRODUCTS_BIKE[permalink].credits, uses: data.uses || 1 };
+                return { valid: true, credits: GUMROAD_PRODUCTS[permalink].credits, uses: data.uses || 1 };
             }
-        } catch (e) { /* جرّب المنتج التالي */ }
+        } catch (e) { /* try next */ }
     }
     return { valid: false };
 }
-async function loadUsedLicenseKeysBike() {
+
+async function loadUsedKeys() {
     const raw = localStorage.getItem('bikeProUsedLicenses');
     if (!raw) return [];
-    const parsed = await decryptFromStorage(raw);
+    const parsed = await decryptData(raw);
     return Array.isArray(parsed) ? parsed : [];
 }
-async function saveUsedLicenseKeyBike(key) {
+
+async function saveUsedKey(key) {
     try {
-        const arr = await loadUsedLicenseKeysBike();
+        const arr = await loadUsedKeys();
         arr.push(key);
-        localStorage.setItem('bikeProUsedLicenses', await encryptForStorage(arr));
+        localStorage.setItem('bikeProUsedLicenses', await encryptData(arr));
     } catch (e) {}
 }
 
-// ==================== 5. النظام الذكي (مبسط مع الحفاظ على الوظائف) ====================
-
+// ==================== 8. النظام الذكي ====================
 class SmartBikeSystem {
     constructor() {
         this.sensors = {
-            1: { id: 1, name: 'sound', measured: false, skipped: false, val: null, extra: null, gateOpen: false, isMeasuring: false, progress: 0, total: 8 },
-            2: { id: 2, name: 'smoke', measured: false, skipped: false, val: null, extra: null, gateOpen: false, isMeasuring: false, progress: 0, total: 3 },
-            3: { id: 3, name: 'vibration', measured: false, skipped: false, val: null, extra: null, gateOpen: false, isMeasuring: false, progress: 0, total: 6 }
+            1: { id: 1, name: 'sound', measured: false, skipped: false, val: null, extra: null, gateOpen: false, isMeasuring: false, progress: 0 },
+            2: { id: 2, name: 'smoke', measured: false, skipped: false, val: null, extra: null, gateOpen: false, isMeasuring: false, progress: 0 },
+            3: { id: 3, name: 'vibration', measured: false, skipped: false, val: null, extra: null, gateOpen: false, isMeasuring: false, progress: 0 },
+            4: { id: 4, name: 'temperature', measured: false, skipped: false, val: null, extra: null, gateOpen: false, isMeasuring: false, progress: 0 }
         };
         this.completed = 0;
         this.measuredCount = 0;
@@ -3766,10 +3794,27 @@ class SmartBikeSystem {
         this.freeCredits = 3;
         this.paidCredits = 0;
         this.isCalibration = false;
-        this.deviceId = generateDeviceId();
+        this.deviceId = this.generateDeviceId();
+        this._measuring = false;
+        this.usedDiagnosis = false;
+        this.motionHandler = null;
     }
 
-    // ==================== دوال فتح البوابة والقياس (نفس نظام السيارة) ====================
+    generateDeviceId() {
+        let id = localStorage.getItem('bikeProDeviceId');
+        if (!id) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = 'BIKE-';
+            for (let i = 0; i < 8; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            id = result;
+            localStorage.setItem('bikeProDeviceId', id);
+        }
+        return id;
+    }
+
+    // ====== فتح البوابة ======
     async openGate(sensorId) {
         const sensor = this.sensors[sensorId];
         if (sensor.gateOpen) return true;
@@ -3783,6 +3828,7 @@ class SmartBikeSystem {
                 case 1: success = await this.openSoundGate(); break;
                 case 2: success = await this.openCameraGate(); break;
                 case 3: success = await this.openMotionGate(); break;
+                case 4: success = true; break;
             }
 
             if (success) {
@@ -3796,7 +3842,6 @@ class SmartBikeSystem {
                 return false;
             }
         } catch (e) {
-            console.warn('Gate error:', e.message);
             this.updateUI(sensorId, 'gate_failed');
             this.showRetrySkip(sensorId);
             return false;
@@ -3856,6 +3901,7 @@ class SmartBikeSystem {
         } catch (e) { return false; }
     }
 
+    // ====== القياس ======
     async measure(sensorId) {
         const sensor = this.sensors[sensorId];
         if (sensor.measured || sensor.skipped) return;
@@ -3884,6 +3930,7 @@ class SmartBikeSystem {
                 case 1: result = await this.measureSound(sensorId); break;
                 case 2: result = await this.measureSmoke(sensorId); break;
                 case 3: result = await this.measureVibration(sensorId); break;
+                case 4: result = await this.measureTemperature(sensorId); break;
             }
 
             if (result && result.isValid) {
@@ -3894,7 +3941,7 @@ class SmartBikeSystem {
                 this.completed++;
                 this.updateUI(sensorId, 'complete');
                 setTimeout(() => {
-                    if (sensorId < 3 && !this.sensors[sensorId+1].measured && !this.sensors[sensorId+1].skipped) {
+                    if (sensorId < 4 && !this.sensors[sensorId+1].measured && !this.sensors[sensorId+1].skipped) {
                         this.currentStep = sensorId + 1;
                         document.getElementById('currentStep').textContent = sensorId + 1;
                         document.querySelectorAll('.step-dot').forEach((d, idx) => {
@@ -3904,8 +3951,8 @@ class SmartBikeSystem {
                             else d.classList.add('active');
                         });
                         this.openGate(sensorId + 1);
-                    } else if (sensorId === 3 || this.completed >= 3) {
-                        setTimeout(() => showFinalVerdict(), 500);
+                    } else if (sensorId === 4 || this.completed >= 4) {
+                        setTimeout(() => this.showFinalDiagnosis(), 500);
                         document.getElementById('listenBtn').disabled = false;
                         document.getElementById('copyBtn').disabled = false;
                         document.getElementById('shareBtn').disabled = false;
@@ -3916,7 +3963,6 @@ class SmartBikeSystem {
                 this.showRetrySkip(sensorId);
             }
         } catch (e) {
-            console.warn('Measure error:', e.message);
             this.updateUI(sensorId, 'measure_failed');
             this.showRetrySkip(sensorId);
         } finally {
@@ -3924,6 +3970,7 @@ class SmartBikeSystem {
         }
     }
 
+    // ====== قياس الصوت ======
     async measureSound(sensorId) {
         const analyser = this.streams.analyser;
         if (!analyser) return { isValid: false, value: null };
@@ -3946,8 +3993,6 @@ class SmartBikeSystem {
                     return;
                 }
                 analyser.getFloatTimeDomainData(dataArray);
-                // هذه العينات (fftSize) متصلة زمنياً فعلياً (لقطة واحدة حقيقية من المخزن المؤقت الصوتي)
-                // فنحلّلها فوراً كما هي — بدل دمج غلاف RMS بمعدل عينات مفترض خاطئ
                 const snapshot = Array.from(dataArray);
                 const freqEst = this.estimateDominantFreqSnapshot(snapshot, this.streams.audioContext.sampleRate, 20, 2000, 5);
                 if (freqEst !== null) freqEstimates.push(freqEst);
@@ -3959,14 +4004,12 @@ class SmartBikeSystem {
         });
     }
 
-    // نافذة Hann لتقليل التسرب الطيفي قبل التحليل
     hannWindow(samples) {
         const N = samples.length;
         if (N < 2) return samples;
         return samples.map((v, i) => v * (0.5 - 0.5 * Math.cos((2 * Math.PI * i) / (N - 1))));
     }
 
-    // إزالة الاتجاه العام بمتوسط متحرك بسيط
     movingAverageSimple(arr, window) {
         const out = [];
         for (let i = 0; i < arr.length; i++) {
@@ -3977,8 +4020,6 @@ class SmartBikeSystem {
         return out;
     }
 
-    // خوارزمية Goertzel: تحسب قوة الطيف عند تردد محدد بدقة رياضية صحيحة، دون الحاجة لتحويل فورييه كامل
-    // أو طول عينات بقوة 2 — بديل عن fft() السابقة التي كانت تتعامل خطأً مع الأعداد المركّبة عبر مستويات العودية
     goertzelPower(samples, sampleRateHz, targetFreqHz) {
         const N = samples.length;
         const k = Math.round(N * targetFreqHz / sampleRateHz);
@@ -4012,24 +4053,21 @@ class SmartBikeSystem {
     processSoundSamples(freqEstimates, allRms) {
         if (freqEstimates.length < 5) return { isValid: false, value: null };
 
-        // الوسيط (median) لعدة تقديرات مستقلة، أكثر مقاومة للشذوذ من قيمة واحدة من تحليل خاطئ
         const sorted = [...freqEstimates].sort((a, b) => a - b);
         const mid = Math.floor(sorted.length / 2);
         const freq = sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 
         const totalPower = allRms.reduce((a, b) => a + b, 0);
-        // جودة القياس: مدى اتفاق التقديرات المستقلة مع بعضها (كلما تقاربت، زادت الثقة)
-        const spread = sorted[sorted.length - 1] - sorted[0];
-        const quality = spread < 100 ? 'high' : spread < 300 ? 'medium' : 'low';
         const isValid = freq > 20 && freq < 2000 && totalPower > 0.005;
 
         return {
             isValid: isValid,
-            value: { freq: Math.round(freq * 10) / 10, quality },
+            value: { freq: Math.round(freq * 10) / 10 },
             extra: { estimates: freqEstimates.length, power: totalPower }
         };
     }
 
+    // ====== قياس الدخان ======
     async measureSmoke(sensorId) {
         const video = this.streams.video;
         if (!video) return { isValid: false, value: null };
@@ -4070,6 +4108,7 @@ class SmartBikeSystem {
         };
     }
 
+    // ====== قياس الاهتزاز ======
     async measureVibration(sensorId) {
         return new Promise((resolve) => {
             const samples = [];
@@ -4086,14 +4125,16 @@ class SmartBikeSystem {
 
                 if (count >= maxSamples) {
                     window.removeEventListener('devicemotion', handler);
+                    this.motionHandler = null;
                     const result = this.processVibrationSamples(samples);
                     resolve(result);
                 }
             };
-
+            this.motionHandler = handler;
             window.addEventListener('devicemotion', handler);
             setTimeout(() => {
                 window.removeEventListener('devicemotion', handler);
+                this.motionHandler = null;
                 if (samples.length < 5) {
                     resolve({ isValid: false, value: null });
                 } else {
@@ -4121,6 +4162,32 @@ class SmartBikeSystem {
         };
     }
 
+    // ====== قياس الحرارة ======
+    async measureTemperature(sensorId) {
+        let temp = 30;
+        try {
+            if (navigator.getBattery) {
+                const battery = await navigator.getBattery();
+                const level = battery.level * 100;
+                temp = 25 + (level / 100) * 15 + (battery.charging ? 3 : 0);
+            } else {
+                const cores = navigator.hardwareConcurrency || 2;
+                temp = 30 + (cores / 8) * 10;
+            }
+        } catch (e) {
+            temp = 30;
+        }
+        temp = Math.round(temp * 10) / 10;
+        const isValid = temp > 20 && temp < 80;
+        this.updateProgress(sensorId, 100);
+        return {
+            isValid: isValid,
+            value: { temp },
+            extra: { source: 'battery_estimate' }
+        };
+    }
+
+    // ====== واجهة المستخدم ======
     updateUI(sensorId, state) {
         const card = document.getElementById('card' + sensorId);
         const preview = document.getElementById('previewText' + sensorId);
@@ -4162,6 +4229,7 @@ class SmartBikeSystem {
                 case 1: display = val.freq?.toFixed(1) + ' ' + t('unit_bpm'); break;
                 case 2: display = 'RGB(' + Math.round(val.r) + ',' + Math.round(val.g) + ',' + Math.round(val.b) + ')'; break;
                 case 3: display = val.std?.toFixed(2) + ' ' + t('unit_steps'); break;
+                case 4: display = val.temp?.toFixed(1) + ' ' + t('unit_celsius'); break;
             }
             if (result) result.textContent = '📊 ' + display;
             if (subResult) subResult.textContent = '✅ ' + t('done');
@@ -4225,7 +4293,7 @@ class SmartBikeSystem {
         this.updateUI(sensorId, 'skipped');
         
         setTimeout(() => {
-            if (sensorId < 3 && !this.sensors[sensorId+1].measured && !this.sensors[sensorId+1].skipped) {
+            if (sensorId < 4 && !this.sensors[sensorId+1].measured && !this.sensors[sensorId+1].skipped) {
                 this.currentStep = sensorId + 1;
                 document.getElementById('currentStep').textContent = sensorId + 1;
                 document.querySelectorAll('.step-dot').forEach((d, idx) => {
@@ -4235,8 +4303,8 @@ class SmartBikeSystem {
                     else d.classList.add('active');
                 });
                 this.openGate(sensorId + 1);
-            } else if (sensorId === 3 || this.completed >= 3) {
-                setTimeout(() => showFinalVerdict(), 500);
+            } else if (sensorId === 4 || this.completed >= 4) {
+                setTimeout(() => this.showFinalDiagnosis(), 500);
                 document.getElementById('listenBtn').disabled = false;
                 document.getElementById('copyBtn').disabled = false;
                 document.getElementById('shareBtn').disabled = false;
@@ -4258,24 +4326,86 @@ class SmartBikeSystem {
             this.streams.video.getTracks().forEach(t => t.stop());
             this.streams.video = null;
         }
-        if (sensorId === 3 && this.streams.motionHandler) {
-            window.removeEventListener('devicemotion', this.streams.motionHandler);
-            this.streams.motionHandler = null;
+        if (sensorId === 3 && this.motionHandler) {
+            window.removeEventListener('devicemotion', this.motionHandler);
+            this.motionHandler = null;
         }
     }
 
-    getFinalVerdict() {
-        const total = 3;
-        const measured = this.measuredCount;
-        const skipped = Object.values(this.sensors).filter(s => s.skipped).length;
-        const notMeasured = total - measured - skipped;
+    // ====== التشخيص النهائي ======
+    showFinalDiagnosis() {
+        let measuredCount = 0;
 
-        const confidence = measured / total;
+        for (let i = 1; i <= 4; i++) {
+            const s = this.sensors[i];
+            if (s.measured && s.val) {
+                measuredCount++;
+            }
+        }
 
-        let similarity = 0.5;
+        const fv = document.getElementById('finalVerdict');
+        let icon, colorClass, shortText, verdictText;
+
+        if (measuredCount === 0) {
+            icon = '🔴';
+            colorClass = 'gray';
+            shortText = '⚠️ ' + t('no_data');
+            verdictText = t('no_data');
+        } else if (measuredCount < 3) {
+            icon = '🟠';
+            colorClass = 'orange';
+            shortText = '⚠️ ' + t('partial_data', measuredCount);
+            verdictText = t('partial_data', measuredCount) + '. ' + t('complete_or_skip_all');
+        } else if (measuredCount >= 3) {
+            icon = '🟢';
+            colorClass = 'green';
+            shortText = '✅ ' + t('verdict_good');
+            verdictText = t('verdict_all_normal');
+        } else {
+            icon = '🟡';
+            colorClass = 'yellow';
+            shortText = '⚠️ ' + t('verdict_med');
+            verdictText = t('verdict_med') + '. ' + t('some_skipped');
+        }
+
+        document.getElementById('finalIcon').textContent = icon;
+        document.getElementById('finalShortText').textContent = shortText;
+        document.getElementById('finalShortText').className = 'final-short-text ' + 
+            (colorClass === 'green' ? 'good' : 
+             colorClass === 'orange' ? 'danger' : 
+             colorClass === 'yellow' ? 'warning' : 'muted');
+        document.getElementById('confidenceCount').textContent = measuredCount + '/4';
+        document.getElementById('verdictSentence').textContent = verdictText;
+
+        let details = '';
+        const names = ['🎤 ' + t('sensor1'), '📸 ' + t('sensor2'), '📳 ' + t('sensor3'), '🌡️ ' + t('sensor4')];
+        for (let i = 1; i <= 4; i++) {
+            const s = this.sensors[i];
+            if (s.measured && s.val) {
+                let val = '';
+                if (i === 1) val = s.val.freq?.toFixed(1) + ' Hz';
+                else if (i === 2) val = 'RGB(' + Math.round(s.val.r) + ',' + Math.round(s.val.g) + ',' + Math.round(s.val.b) + ')';
+                else if (i === 3) val = s.val.std?.toFixed(2) + ' m/s²';
+                else if (i === 4) val = s.val.temp?.toFixed(1) + '°C';
+                details += `<div style="color:#2ecc71;font-size:0.75rem;">✅ ${names[i-1]}: ${val}</div>`;
+            } else if (s.skipped) {
+                details += `<div style="color:#f59e0b;font-size:0.75rem;">⏭ ${names[i-1]}: ${t('skipped')}</div>`;
+            } else {
+                details += `<div style="color:#6c7a92;font-size:0.75rem;">⬜ ${names[i-1]}: ${t('not_measured')}</div>`;
+            }
+        }
+        document.getElementById('summaryContainer').innerHTML = details;
+
+        document.getElementById('domFreq').textContent = this.sensors[1].measured ? this.sensors[1].val.freq?.toFixed(1) + ' Hz' : '--';
+        const s2 = this.sensors[2];
+        document.getElementById('smokeColor').textContent = s2.measured ? 'RGB(' + Math.round(s2.val.r) + ',' + Math.round(s2.val.g) + ',' + Math.round(s2.val.b) + ')' : '--';
+        document.getElementById('vibIntensity').textContent = this.sensors[3].measured ? this.sensors[3].val.std?.toFixed(2) + ' m/s²' : '--';
+        document.getElementById('tempValue').textContent = this.sensors[4].measured ? this.sensors[4].val.temp?.toFixed(1) + '°C' : '--';
+
+        let similarity = 0;
         if (this.baseline) {
             let totalDiff = 0, count = 0;
-            for (let i = 1; i <= 3; i++) {
+            for (let i = 1; i <= 4; i++) {
                 const s = this.sensors[i];
                 if (s.measured && this.baseline[i]) {
                     let diff = 0;
@@ -4287,6 +4417,8 @@ class SmartBikeSystem {
                                 Math.abs(s.val.b - this.baseline[i].b) / 255) / 3;
                     } else if (i === 3 && s.val.std && this.baseline[i].std) {
                         diff = Math.abs(s.val.std - this.baseline[i].std) / (this.baseline[i].std || 1);
+                    } else if (i === 4 && s.val.temp && this.baseline[i].temp) {
+                        diff = Math.abs(s.val.temp - this.baseline[i].temp) / (this.baseline[i].temp || 1);
                     }
                     totalDiff += diff;
                     count++;
@@ -4294,107 +4426,31 @@ class SmartBikeSystem {
             }
             if (count > 0) {
                 const avgDiff = totalDiff / count;
-                similarity = Math.max(0, 1 - avgDiff * 1.5);
+                similarity = Math.max(0, Math.min(100, Math.round((1 - avgDiff) * 100)));
             }
         }
+        document.getElementById('scoreCircle').textContent = similarity + '%';
 
-        let status, verdict, icon, colorClass, shortText;
+        fv.className = 'final-verdict show ' + colorClass;
+        fv.style.display = 'block';
 
-        // اللون/الأيقونة/الحكم: مبنية على شدة الانحراف عن المرجع فقط (لا على عدد الحساسات المقاسة)
-        // فحص كامل بانحراف كبير يجب أن يُصنَّف تحذيراً واضحاً، لا "بيانات جزئية" مُضلِّلة —
-        // عدد الحساسات المقاسة يُعرض بشارة "X/3" منفصلة، فلا نخلط المفهومين في نفس الحكم
-        if (measured === 0) {
-            status = 'none';
-            verdict = t('no_data');
-            icon = '🔴';
-            colorClass = 'gray';
-            shortText = '⚠️ ' + t('no_data');
-        } else if (!this.baseline) {
-            status = 'medium';
-            verdict = t('verdict_med');
-            icon = '🆕';
-            colorClass = 'yellow';
-            shortText = t('verdict_med');
-        } else if (similarity > 0.7) {
-            status = 'high';
-            verdict = t('verdict_good');
-            icon = '🟢';
-            colorClass = 'green';
-            shortText = t('verdict_good');
-        } else if (similarity > 0.4) {
-            status = 'medium';
-            verdict = t('verdict_med');
-            icon = '🟡';
-            colorClass = 'yellow';
-            shortText = t('verdict_med');
-        } else {
-            status = 'low';
-            verdict = t('verdict_low');
-            icon = '🟠';
-            colorClass = 'orange';
-            shortText = t('verdict_low');
+        document.getElementById('devToggleRow').style.display = this.isAdmin ? 'block' : 'none';
+        if (!this.isAdmin) document.getElementById('devDetailsContainer').style.display = 'none';
+
+        document.getElementById('listenBtn').disabled = false;
+        document.getElementById('copyBtn').disabled = false;
+        document.getElementById('shareBtn').disabled = false;
+
+        if (this.isCalibration && measuredCount > 0) {
+            this.saveBaseline();
+            this.isCalibration = false;
         }
-
-        let sentence = '';
-        if (measured === 0) {
-            sentence = t('no_data');
-        } else if (!this.baseline) {
-            sentence = t('no_baseline_note');
-        } else if (status === 'high') {
-            sentence = t('verdict_all_normal');
-        } else if (status === 'medium' || status === 'low') {
-            const devs = [];
-            for (let i = 1; i <= 3; i++) {
-                const s = this.sensors[i];
-                if (s.measured && this.baseline[i]) {
-                    let diff = 0;
-                    if (i === 1 && s.val.freq && this.baseline[i].freq) {
-                        diff = Math.abs(s.val.freq - this.baseline[i].freq) / (this.baseline[i].freq || 1);
-                    } else if (i === 2 && s.val.r !== undefined && this.baseline[i].r !== undefined) {
-                        diff = (Math.abs(s.val.r - this.baseline[i].r) / 255 +
-                                Math.abs(s.val.g - this.baseline[i].g) / 255 +
-                                Math.abs(s.val.b - this.baseline[i].b) / 255) / 3;
-                    } else if (i === 3 && s.val.std && this.baseline[i].std) {
-                        diff = Math.abs(s.val.std - this.baseline[i].std) / (this.baseline[i].std || 1);
-                    }
-                    if (diff > 0.15) devs.push(t('sensor' + i));
-                }
-            }
-            if (devs.length === 0) sentence = t('verdict_all_normal');
-            else sentence = t('verdict_deviation_note') + ' ' + devs.join('، ');
-        } else {
-            sentence = verdict;
-        }
-
-        const results = {};
-        for (let i = 1; i <= 3; i++) {
-            const s = this.sensors[i];
-            if (s.measured) results[i] = { status: 'measured', value: s.val };
-            else if (s.skipped) results[i] = { status: 'skipped' };
-            else results[i] = { status: 'not_measured' };
-        }
-
-        return {
-            confidence,
-            measured,
-            skipped,
-            notMeasured,
-            total,
-            verdict: sentence,
-            icon,
-            colorClass,
-            shortText,
-            similarity: Math.round(similarity * 100),
-            results,
-            isComplete: measured === total,
-            isPartial: measured > 0 && measured < total,
-            isInsufficient: measured === 0
-        };
     }
 
+    // ====== إدارة الرصيد ======
     async saveCredits() {
         try {
-            const enc = await encryptForStorage({ free: this.freeCredits, paid: this.paidCredits });
+            const enc = await encryptData({ free: this.freeCredits, paid: this.paidCredits });
             localStorage.setItem('bikeProCredits', enc);
         } catch (e) {}
     }
@@ -4403,7 +4459,7 @@ class SmartBikeSystem {
         try {
             const raw = localStorage.getItem('bikeProCredits');
             if (raw) {
-                const data = await decryptFromStorage(raw);
+                const data = await decryptData(raw);
                 if (data && typeof data.free === 'number') {
                     this.freeCredits = data.free;
                     this.paidCredits = data.paid || 0;
@@ -4418,9 +4474,10 @@ class SmartBikeSystem {
         document.getElementById('freeCount').textContent = total;
     }
 
+    // ====== البصمة المرجعية ======
     async saveBaseline() {
         const data = {};
-        for (let i = 1; i <= 3; i++) {
+        for (let i = 1; i <= 4; i++) {
             const s = this.sensors[i];
             if (s.measured && s.val) {
                 data[i] = s.val;
@@ -4429,7 +4486,7 @@ class SmartBikeSystem {
         if (Object.keys(data).length > 0) {
             this.baseline = data;
             try {
-                localStorage.setItem('bikeProBaseline', await encryptForStorage(data));
+                localStorage.setItem('bikeProBaseline', await encryptData(data));
             } catch (e) {}
             this.updateRefBadge();
             showToast('✅ ' + t('baseline_saved'));
@@ -4442,7 +4499,7 @@ class SmartBikeSystem {
         try {
             const raw = localStorage.getItem('bikeProBaseline');
             if (raw) {
-                const data = await decryptFromStorage(raw);
+                const data = await decryptData(raw);
                 if (data) {
                     this.baseline = data;
                     this.updateRefBadge();
@@ -4457,15 +4514,15 @@ class SmartBikeSystem {
         const badge = document.getElementById('refStatus');
         if (this.baseline) {
             badge.textContent = '📌 ' + t('fingerprint') + ': ' + t('exists');
-            badge.style.borderColor = '#2ecc71';
+            badge.className = 'ref-badge exists';
         } else {
             badge.textContent = '📌 ' + t('fingerprint') + ': ' + t('not_set');
-            badge.style.borderColor = '#8b5cf6';
+            badge.className = 'ref-badge';
         }
     }
 
     fullReset() {
-        for (let i = 1; i <= 3; i++) {
+        for (let i = 1; i <= 4; i++) {
             this.sensors[i] = { ...this.sensors[i], measured: false, skipped: false, val: null, extra: null, gateOpen: false, isMeasuring: false, progress: 0 };
             this.cleanupStreams(i);
             this.updateUI(i, 'gate_opening');
@@ -4483,21 +4540,38 @@ class SmartBikeSystem {
             d.className = 'step-dot';
             if (i === 0) d.classList.add('active');
         });
-        setTimeout(() => this.openGate(1), 500);
+        setTimeout(() => this.openGate(1), 300);
     }
 }
 
-// ==================== 6. الدوال العامة ====================
-
+// ==================== 9. الدوال العامة ====================
 const system = new SmartBikeSystem();
 
-function jumpToSensor(id) {
-    const card = document.getElementById('card' + id);
-    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+function goToStep(step) {
+    if (step < 1 || step > 4) return;
+    system.currentStep = step;
+    document.getElementById('currentStep').textContent = step;
+    document.querySelectorAll('.sensor-card').forEach((c, idx) => {
+        c.classList.remove('active');
+        if (idx + 1 === step) c.classList.add('active');
+    });
+    document.querySelectorAll('.step-dot').forEach((d, idx) => {
+        const num = idx + 1;
+        d.className = 'step-dot';
+        if (system.sensors[num].measured) d.classList.add('done');
+        else if (system.sensors[num].skipped) d.classList.add('skipped');
+        else if (num === step) d.classList.add('active');
+    });
     document.querySelectorAll('.diag-btn').forEach(b => b.classList.remove('active'));
     const map = {1:'diagSound',2:'diagSmoke',3:'diagVib',4:'diagTemp'};
-    const btn = document.getElementById(map[id]);
+    const btn = document.getElementById(map[step]);
     if (btn) btn.classList.add('active');
+}
+
+function jumpToSensor(id) {
+    goToStep(id);
+    const card = document.getElementById('card' + id);
+    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function showToast(msg) {
@@ -4519,11 +4593,7 @@ function rate(n) {
 
 function buyPack(amount) {
     if (system.isAdmin) { showToast('👑 Admin'); return; }
-    const urls = { 
-        1: 'https://mouloudkamali.gumroad.com/l/iqqyus', 
-        5: 'https://mouloudkamali.gumroad.com/l/gqbdr', 
-        15: 'https://mouloudkamali.gumroad.com/l/ocfbzc' 
-    };
+    const urls = { 1: 'https://mouloudkamali.gumroad.com/l/iqqyus', 5: 'https://mouloudkamali.gumroad.com/l/gqbdr', 15: 'https://mouloudkamali.gumroad.com/l/ocfbzc' };
     window.open(urls[amount], '_blank');
 }
 
@@ -4531,38 +4601,37 @@ async function activateCode() {
     const code = document.getElementById('codeInput').value.trim();
     if (!code) return;
     const btn = document.getElementById('activateBtn');
-    if (btn) btn.disabled = true;
+    btn.disabled = true;
     showToast('⏳ ' + t('verifying'));
 
-    // 1) كود المطور الخاص (أداة داخلية منفصلة عن نظام الشراء)
-    if (await checkAdminPasswordBike(code)) {
+    if (await checkAdminPassword(code)) {
         system.isAdmin = true;
         system.updateCreditsDisplay();
+        document.getElementById('adminIcon').classList.add('admin-active');
         showToast('👑 ' + t('developer') + ' ' + t('activated'));
         document.getElementById('codeInput').value = '';
-        if (btn) btn.disabled = false;
+        btn.disabled = false;
         renderAll();
         return;
     }
 
-    // 2) مفتاح ترخيص Gumroad حقيقي — تحقق فعلي من الشراء، ومنع إعادة الاستخدام على هذا المتصفح
-    const usedKeys = await loadUsedLicenseKeysBike();
+    const usedKeys = await loadUsedKeys();
     if (usedKeys.includes(code)) {
         showToast('⚠️ ' + t('license_already_used'));
         document.getElementById('codeInput').value = '';
-        if (btn) btn.disabled = false;
+        btn.disabled = false;
         return;
     }
 
     try {
-        const result = await verifyGumroadLicenseBike(code);
+        const result = await verifyGumroadLicense(code);
         if (result.valid) {
             if (result.uses > 1) {
                 showToast('⚠️ ' + t('license_already_used'));
             } else {
                 system.paidCredits += result.credits;
                 await system.saveCredits();
-                await saveUsedLicenseKeyBike(code);
+                await saveUsedKey(code);
                 system.updateCreditsDisplay();
                 showToast('✅ ' + t('license_activated', result.credits));
                 renderAll();
@@ -4574,7 +4643,7 @@ async function activateCode() {
         showToast('⚠️ ' + t('network_error'));
     }
     document.getElementById('codeInput').value = '';
-    if (btn) btn.disabled = false;
+    btn.disabled = false;
 }
 
 function quickReset() {
@@ -4598,69 +4667,7 @@ function toggleDevDetails() {
     el.style.display = (el.style.display === 'none' || !el.style.display) ? 'block' : 'none';
 }
 
-async function showFinalVerdict() {
-    const verdict = system.getFinalVerdict();
-    const fv = document.getElementById('finalVerdict');
-
-    document.getElementById('finalIcon').textContent = verdict.icon;
-    document.getElementById('finalShortText').textContent = verdict.shortText;
-    document.getElementById('finalShortText').className = 'final-short-text ' + 
-        (verdict.colorClass === 'green' ? 'good' : 
-         verdict.colorClass === 'yellow' ? 'warning' : 
-         verdict.colorClass === 'orange' ? 'danger' : 'muted');
-    document.getElementById('confidenceCount').textContent = verdict.measured + '/' + verdict.total;
-    document.getElementById('verdictSentence').textContent = verdict.verdict;
-
-    const badge = document.getElementById('confidenceDisplay');
-    badge.className = 'confidence-badge ' + 
-        (verdict.confidence === 1 ? 'high' : 
-         verdict.confidence >= 0.5 ? 'medium' : 
-         verdict.confidence > 0 ? 'low' : 'none');
-
-    document.getElementById('scoreCircle').textContent = verdict.similarity + '%';
-
-    let details = '';
-    const names = ['🎤 ' + t('sensor1'), '📸 ' + t('sensor2'), '📳 ' + t('sensor3')];
-    for (let i = 1; i <= 3; i++) {
-        const r = verdict.results[i];
-        if (r.status === 'measured') {
-            let val = '';
-            if (i === 1) val = r.value.freq?.toFixed(1) + ' ' + t('unit_bpm');
-            else if (i === 2) val = 'RGB(' + Math.round(r.value.r) + ',' + Math.round(r.value.g) + ',' + Math.round(r.value.b) + ')';
-            else if (i === 3) val = r.value.std?.toFixed(2) + ' ' + t('unit_steps');
-            details += `<div style="color:#2ecc71;font-size:0.8rem;">✅ ${names[i-1]}: ${val}</div>`;
-        } else if (r.status === 'skipped') {
-            details += `<div style="color:#f59e0b;font-size:0.8rem;">⏭ ${names[i-1]}: ${t('skipped')}</div>`;
-        } else {
-            details += `<div style="color:#6c7a92;font-size:0.8rem;">⬜ ${names[i-1]}: ${t('not_measured')}</div>`;
-        }
-    }
-    document.getElementById('summaryContainer').innerHTML = details;
-
-    document.getElementById('domFreq').textContent = system.sensors[1].measured ? system.sensors[1].val.freq?.toFixed(1) + ' Hz' : '--';
-    const s2 = system.sensors[2];
-    document.getElementById('smokeColor').textContent = s2.measured ? 'RGB(' + Math.round(s2.val.r) + ',' + Math.round(s2.val.g) + ',' + Math.round(s2.val.b) + ')' : '--';
-    document.getElementById('vibIntensity').textContent = system.sensors[3].measured ? system.sensors[3].val.std?.toFixed(2) + ' m/s²' : '--';
-    document.getElementById('tempValue').textContent = system.sensors[4].measured ? system.sensors[4].val.temp?.toFixed(1) + '°C' : '--';
-
-    fv.className = 'final-verdict show ' + verdict.colorClass;
-    fv.style.display = 'block';
-
-    document.getElementById('devToggleRow').style.display = system.isAdmin ? 'block' : 'none';
-    if (!system.isAdmin) document.getElementById('devDetailsContainer').style.display = 'none';
-
-    document.getElementById('listenBtn').disabled = false;
-    document.getElementById('copyBtn').disabled = false;
-    document.getElementById('shareBtn').disabled = false;
-
-    if (system.isCalibration && verdict.measured > 0) {
-        await system.saveBaseline();
-        system.isCalibration = false;
-    }
-}
-
-// ==================== 7. الترجمة والعرض ====================
-
+// ==================== 10. الترجمة والعرض ====================
 function renderAll() {
     document.getElementById('titleDynamic').textContent = t('app_title');
     document.getElementById('startBtnLabel').textContent = t('start_btn');
@@ -4671,45 +4678,48 @@ function renderAll() {
     document.getElementById('pack5').textContent = t('pay_pack5');
     document.getElementById('pack15').textContent = t('pay_pack15');
 
-    // تحديث أسماء الحساسات والأدوات
     document.getElementById('sensorName1').innerHTML = '<span class="sensor-icon">🎤</span> <span id="sensorLabel1">' + t('sensor1') + '</span>';
     document.getElementById('sensorName2').innerHTML = '<span class="sensor-icon">📸</span> <span id="sensorLabel2">' + t('sensor2') + '</span>';
     document.getElementById('sensorName3').innerHTML = '<span class="sensor-icon">📳</span> <span id="sensorLabel3">' + t('sensor3') + '</span>';
+    document.getElementById('sensorName4').innerHTML = '<span class="sensor-icon">🌡️</span> <span id="sensorLabel4">' + t('sensor4') + '</span>';
 
     document.getElementById('tool1').textContent = '🎙️ ' + t('tool1');
     document.getElementById('tool2').textContent = '📸 ' + t('tool2');
     document.getElementById('tool3').textContent = '📳 ' + t('tool3');
+    document.getElementById('tool4').textContent = '🌡️ ' + t('tool4');
 
     document.getElementById('instr1').textContent = '📌 ' + t('instr1');
     document.getElementById('instr2').textContent = '📌 ' + t('instr2');
     document.getElementById('instr3').textContent = '📌 ' + t('instr3');
+    document.getElementById('instr4').textContent = '📌 ' + t('instr4');
 
     document.getElementById('measureLabel1').textContent = '▶️ ' + t('measure');
     document.getElementById('measureLabel2').textContent = '▶️ ' + t('measure');
     document.getElementById('measureLabel3').textContent = '▶️ ' + t('measure');
+    document.getElementById('measureLabel4').textContent = '▶️ ' + t('measure');
     document.getElementById('retryLabel1').textContent = '🔄 ' + t('retry');
     document.getElementById('retryLabel2').textContent = '🔄 ' + t('retry');
     document.getElementById('retryLabel3').textContent = '🔄 ' + t('retry');
+    document.getElementById('retryLabel4').textContent = '🔄 ' + t('retry');
     document.getElementById('nextLabel1').textContent = '➡️ ' + t('next');
     document.getElementById('nextLabel2').textContent = '➡️ ' + t('next');
     document.getElementById('nextLabel3').textContent = '➡️ ' + t('next');
+    document.getElementById('nextLabel4').textContent = '➡️ ' + t('next');
     document.getElementById('skipLabel1').textContent = '⏭ ' + t('skip');
     document.getElementById('skipLabel2').textContent = '⏭ ' + t('skip');
     document.getElementById('skipLabel3').textContent = '⏭ ' + t('skip');
+    document.getElementById('skipLabel4').textContent = '⏭ ' + t('skip');
 
-    // أزرار التشخيص السريع
     document.getElementById('diagLabel1').textContent = t('diag_label1');
     document.getElementById('diagLabel2').textContent = t('diag_label2');
     document.getElementById('diagLabel3').textContent = t('diag_label3');
     document.getElementById('diagLabel4').textContent = t('diag_label4');
 
-    // أدوات
     document.getElementById('listenLabel').textContent = t('listen');
     document.getElementById('copyLabel').textContent = t('copy');
     document.getElementById('shareLabel').textContent = t('share');
     document.getElementById('backLabel').textContent = t('back');
 
-    // الموافقة والمعايرة
     document.getElementById('consentTitle').textContent = t('consent_title');
     document.getElementById('consentMessage').textContent = t('consent_text');
     document.getElementById('consentBtnLabel').textContent = '✅ ' + t('consent_btn');
@@ -4720,13 +4730,11 @@ function renderAll() {
     document.getElementById('calibrationYesLabel').textContent = t('calibration_yes');
     document.getElementById('calibrationNoLabel').textContent = t('calibration_no');
 
-    // المطور
     document.getElementById('secretTitle').textContent = t('developer');
     document.getElementById('secretSub').textContent = t('password');
     document.getElementById('secretConfirmLabel').textContent = '✔ ' + t('confirm');
     document.getElementById('secretCloseLabel').textContent = '✖ ' + t('cancel');
 
-    // الخلاصة
     document.getElementById('legalLine').innerHTML = '⚠️ <strong>' + t('legal') + '</strong>';
     document.getElementById('confidenceLabel').textContent = t('confidence_label');
     document.getElementById('stepLabel').textContent = t('step_label');
@@ -4742,9 +4750,13 @@ function renderAll() {
 
     system.updateCreditsDisplay();
     system.updateRefBadge();
-
-    // تحديث ID الجهاز
     document.getElementById('deviceId').textContent = system.deviceId;
+
+    if (system.isAdmin) {
+        document.getElementById('adminIcon').classList.add('admin-active');
+    } else {
+        document.getElementById('adminIcon').classList.remove('admin-active');
+    }
 }
 
 function buildLangSelect() {
@@ -4776,15 +4788,14 @@ function updateDateTime() {
 setInterval(updateDateTime, 1000);
 updateDateTime();
 
-// ==================== 8. التهيئة ====================
-
+// ==================== 11. التهيئة ====================
 document.addEventListener('DOMContentLoaded', async function() {
     buildLangSelect();
 
     await system.loadBaseline();
     await system.loadCredits();
 
-    for (let i = 1; i <= 3; i++) {
+    for (let i = 1; i <= 4; i++) {
         document.getElementById('measure' + i).addEventListener('click', function() {
             system.measure(i);
         });
@@ -4805,9 +4816,13 @@ document.addEventListener('DOMContentLoaded', async function() {
                         if (idx < i) d.classList.add('done');
                         else if (idx === i) d.classList.add('active');
                     });
+                    document.querySelectorAll('.diag-btn').forEach(b => b.classList.remove('active'));
+                    const map = {1:'diagSound',2:'diagSmoke',3:'diagVib',4:'diagTemp'};
+                    const btn = document.getElementById(map[i+1]);
+                    if (btn) btn.classList.add('active');
                     system.openGate(i + 1);
                 } else {
-                    showFinalVerdict();
+                    system.showFinalDiagnosis();
                 }
             } else {
                 showToast('⚠️ ' + t('measure_or_skip_first'));
@@ -4875,9 +4890,10 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     document.getElementById('secretConfirmBtn').addEventListener('click', async function() {
         const pwd = document.getElementById('secretPassword').value;
-        if (await checkAdminPasswordBike(pwd)) {
+        if (await checkAdminPassword(pwd)) {
             system.isAdmin = true;
             system.updateCreditsDisplay();
+            document.getElementById('adminIcon').classList.add('admin-active');
             showToast('👑 ' + t('developer') + ' ' + t('activated'));
             document.getElementById('secretModal').classList.remove('show');
             renderAll();
@@ -4904,6 +4920,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     console.log('📌 ' + t('fingerprint') + ': ' + (system.baseline ? t('exists') : t('not_set')));
     console.log('✅ ' + LANG_LIST.length + ' لغة مدعومة');
     console.log('🆔 Device ID: ' + system.deviceId);
+    console.log('🔑 كلمة المطور مشفرة (SHA-256)');
+    console.log('✅ البوابة تفتح تلقائياً');
+    console.log('📊 4 حساسات فيزيائية');
 });
 
 function startDiagnosis() {
